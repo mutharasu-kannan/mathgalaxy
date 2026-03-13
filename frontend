@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Math Galaxy — Futuristic Calculator Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --black: #050508;
+  --deep: #0a0a12;
+  --card: rgba(20,20,35,0.85);
+  --yellow: #f5e642;
+  --yellow2: #ffe94d;
+  --yellow-dim: rgba(245,230,66,0.12);
+  --yellow-glow: rgba(245,230,66,0.35);
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(245,230,66,0.18);
+  --text: #f0f0f8;
+  --muted: #8888aa;
+  --radius: 24px;
+  --radius-sm: 14px;
+  --font-head: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;min-height:100%;background:var(--black);color:var(--text);font-family:var(--font-body);overflow-x:hidden;}
+/* ===== PARTICLES ===== */
+#particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
+/* ===== PAGES ===== */
+.page{position:fixed;top:0;left:0;width:100%;height:100%;z-index:10;overflow-y:auto;display:none;flex-direction:column;background:var(--black);}
+.page.active{display:flex;}
+/* ===== LOGIN ===== */
+#loginPage{align-items:center;justify-content:center;}
+.login-box{background:rgba(12,12,22,0.95);border:1px solid var(--glass-border);border-radius:32px;padding:52px 44px;max-width:460px;width:92%;box-shadow:0 0 80px rgba(245,230,66,0.1),0 20px 60px rgba(0,0,0,0.7);backdrop-filter:blur(20px);position:relative;z-index:2;}
+.login-logo{text-align:center;margin-bottom:36px;}
+.login-logo .star{font-size:52px;display:block;animation:floatY 3s ease-in-out infinite;}
+.login-logo h1{font-family:var(--font-head);font-size:2rem;font-weight:900;color:var(--yellow);letter-spacing:2px;text-shadow:0 0 30px var(--yellow-glow);}
+.login-logo p{color:var(--muted);font-size:.85rem;margin-top:4px;}
+.form-group{margin-bottom:20px;}
+.form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--yellow);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;}
+.form-group input,.form-group select{width:100%;background:rgba(255,255,255,0.04);border:1px solid rgba(245,230,66,0.2);border-radius:12px;padding:13px 18px;color:var(--text);font-family:var(--font-body);font-size:.95rem;outline:none;transition:all .3s;}
+.form-group input:focus,.form-group select:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,230,66,0.12);}
+.form-group select option{background:#0a0a12;}
+.btn-login{width:100%;padding:15px;background:var(--yellow);color:#000;border:none;border-radius:14px;font-family:var(--font-head);font-size:1rem;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all .3s;margin-top:8px;}
+.btn-login:hover{background:var(--yellow2);box-shadow:0 0 30px var(--yellow-glow);transform:translateY(-2px);}
+/* ===== LOADING ===== */
+#loadingPage{align-items:center;justify-content:center;flex-direction:column;gap:40px;}
+.loading-orb{width:120px;height:120px;border-radius:50%;border:3px solid transparent;border-top:3px solid var(--yellow);border-right:3px solid var(--yellow);animation:spin 1.2s linear infinite;position:relative;box-shadow:0 0 40px var(--yellow-glow);}
+.loading-orb::after{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:2.5rem;color:var(--yellow);animation:pulse 1.2s ease-in-out infinite;}
+.loading-quote{font-family:var(--font-head);font-size:1.3rem;font-weight:600;color:var(--yellow);text-align:center;max-width:500px;padding:0 20px;opacity:0;animation:fadeQuote 2s ease-in-out infinite;}
+.loading-bar-wrap{width:300px;height:4px;background:rgba(255,255,255,0.1);border-radius:4px;overflow:hidden;}
+.loading-bar{height:100%;background:linear-gradient(90deg,var(--yellow),var(--yellow2));border-radius:4px;width:0;transition:width .3s;}
+/* ===== DASHBOARD ===== */
+#dashPage{background:var(--black);}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 36px;background:rgba(10,10,18,0.9);border-bottom:1px solid var(--glass-border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;}
+.topbar-logo{font-family:var(--font-head);font-weight:900;font-size:1.3rem;color:var(--yellow);letter-spacing:2px;}
+.topbar-logo span{color:var(--text);}
+.topbar-nav{display:flex;gap:8px;}
+.nav-btn{background:transparent;border:1px solid rgba(255,255,255,0.1);color:var(--muted);padding:8px 18px;border-radius:30px;font-size:.82rem;font-family:var(--font-body);cursor:pointer;transition:all .3s;}
+.nav-btn:hover,.nav-btn.active{background:var(--yellow-dim);border-color:var(--yellow);color:var(--yellow);}
+.user-badge{background:var(--yellow-dim);border:1px solid var(--glass-border);border-radius:30px;padding:8px 18px;font-size:.82rem;color:var(--yellow);}
+.dash-hero{padding:60px 36px 30px;text-align:center;}
+.dash-hero h2{font-family:var(--font-head);font-size:2.6rem;font-weight:900;color:var(--yellow);text-shadow:0 0 40px var(--yellow-glow);line-height:1.2;}
+.dash-hero p{color:var(--muted);margin-top:10px;font-size:1rem;}
+.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;padding:20px 36px 80px;max-width:1200px;margin:0 auto;width:100%;}
+.main-card{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius);padding:44px 32px;cursor:pointer;transition:all .4s cubic-bezier(.23,1,.32,1);position:relative;overflow:hidden;backdrop-filter:blur(16px);}
+.main-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--yellow),transparent);opacity:0;transition:opacity .4s;}
+.main-card:hover{transform:translateY(-12px) scale(1.02);box-shadow:0 30px 80px rgba(245,230,66,0.15),0 0 0 1px var(--yellow);background:rgba(20,20,35,0.98);}
+.main-card:hover::before{opacity:1;}
+.card-icon{font-size:3.5rem;margin-bottom:20px;display:block;animation:floatY 3s ease-in-out infinite;}
+.main-card:nth-child(2) .card-icon{animation-delay:.5s;}
+.main-card:nth-child(3) .card-icon{animation-delay:1s;}
+.card-title{font-family:var(--font-head);font-size:1.4rem;font-weight:700;color:var(--yellow);margin-bottom:10px;}
+.card-desc{color:var(--muted);font-size:.88rem;line-height:1.6;}
+.card-arrow{position:absolute;bottom:24px;right:28px;color:var(--yellow);font-size:1.5rem;opacity:.5;transition:all .3s;}
+.main-card:hover .card-arrow{opacity:1;transform:translateX(5px);}
+/* ===== INNER PAGES ===== */
+#calcPage,#lifePage,#studPage,#histPage,#aboutPage,#teamPage{background:var(--black);}
+.inner-header{display:flex;align-items:center;gap:16px;padding:24px 36px;background:rgba(10,10,18,0.9);border-bottom:1px solid var(--glass-border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100;}
+.back-btn{background:var(--yellow-dim);border:1px solid var(--glass-border);color:var(--yellow);width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.1rem;transition:all .3s;flex-shrink:0;}
+.back-btn:hover{background:var(--yellow);color:#000;}
+.inner-header h2{font-family:var(--font-head);font-size:1.4rem;font-weight:700;color:var(--yellow);}
+.inner-content{padding:32px 36px;max-width:1200px;margin:0 auto;width:100%;}
+/* ===== TOOL GRID ===== */
+.tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;margin-bottom:40px;}
+.tool-card{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:28px 22px;cursor:pointer;transition:all .3s;text-align:center;backdrop-filter:blur(12px);}
+.tool-card:hover{border-color:var(--yellow);background:rgba(245,230,66,0.06);transform:translateY(-4px);box-shadow:0 12px 40px rgba(245,230,66,0.1);}
+.tool-card .t-icon{font-size:2.2rem;margin-bottom:12px;}
+.tool-card .t-name{font-family:var(--font-head);font-size:.95rem;font-weight:600;color:var(--text);}
+/* ===== CALCULATOR PANELS ===== */
+.calc-panel{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius);padding:36px;backdrop-filter:blur(16px);margin-bottom:24px;display:none;}
+.calc-panel.active{display:block;animation:fadeIn .4s ease;}
+.calc-panel h3{font-family:var(--font-head);font-size:1.2rem;font-weight:700;color:var(--yellow);margin-bottom:24px;}
+.input-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:18px;}
+.inp-group label{display:block;font-size:.78rem;font-weight:600;color:var(--yellow);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;}
+.inp-group input,.inp-group select,.inp-group textarea{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(245,230,66,0.18);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font-body);font-size:.92rem;outline:none;transition:all .3s;}
+.inp-group input:focus,.inp-group select:focus,.inp-group textarea:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(245,230,66,0.1);}
+.inp-group select option{background:#0a0a12;}
+.inp-group textarea{min-height:80px;resize:vertical;}
+.btn-calc{background:var(--yellow);color:#000;border:none;border-radius:10px;padding:12px 28px;font-family:var(--font-head);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .3s;margin-top:8px;}
+.btn-calc:hover{background:var(--yellow2);box-shadow:0 0 20px var(--yellow-glow);transform:translateY(-2px);}
+.btn-sec{background:transparent;color:var(--yellow);border:1px solid var(--yellow);border-radius:10px;padding:12px 28px;font-family:var(--font-head);font-size:.9rem;font-weight:700;cursor:pointer;transition:all .3s;margin-top:8px;margin-left:10px;}
+.btn-sec:hover{background:var(--yellow-dim);}
+.result-box{background:rgba(245,230,66,0.07);border:1px solid rgba(245,230,66,0.25);border-radius:12px;padding:20px;margin-top:18px;display:none;}
+.result-box.show{display:block;animation:fadeIn .3s ease;}
+.result-label{font-size:.78rem;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px;}
+.result-value{font-family:var(--font-head);font-size:1.6rem;font-weight:700;color:var(--yellow);}
+.steps-box{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;margin-top:14px;}
+.step{display:flex;gap:12px;margin-bottom:14px;animation:slideIn .4s ease both;}
+.step-num{background:var(--yellow);color:#000;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0;}
+.step-text{color:var(--text);font-size:.9rem;line-height:1.6;padding-top:2px;}
+.step-text code{background:rgba(245,230,66,0.15);color:var(--yellow);padding:2px 8px;border-radius:6px;font-family:monospace;}
+/* ===== BASIC CALC BUTTONS ===== */
+.calc-display{background:#000;border:1px solid rgba(245,230,66,0.2);border-radius:12px;padding:20px 24px;text-align:right;font-family:monospace;font-size:2rem;color:var(--yellow);min-height:70px;margin-bottom:16px;word-break:break-all;}
+.calc-display .expr{font-size:1rem;color:var(--muted);min-height:20px;}
+.calc-buttons{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.calc-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:18px;font-size:1rem;font-family:var(--font-head);font-weight:600;color:var(--text);cursor:pointer;transition:all .2s;}
+.calc-btn:hover{background:rgba(245,230,66,0.12);border-color:var(--yellow);color:var(--yellow);}
+.calc-btn.op{color:var(--yellow);}
+.calc-btn.eq{background:var(--yellow);color:#000;grid-column:span 1;}
+.calc-btn.eq:hover{background:var(--yellow2);}
+.calc-btn.clr{color:#ff6b6b;}
+/* ===== MATRIX ===== */
+.matrix-grid{display:inline-grid;gap:8px;margin-bottom:16px;}
+.matrix-input{width:60px;height:48px;background:rgba(255,255,255,0.05);border:1px solid rgba(245,230,66,0.18);border-radius:8px;text-align:center;color:var(--text);font-size:.9rem;outline:none;}
+.matrix-input:focus{border-color:var(--yellow);}
+/* ===== CHART CONTAINER ===== */
+.chart-wrap{background:rgba(0,0,0,0.3);border-radius:12px;padding:20px;margin-top:16px;position:relative;}
+.chart-wrap canvas{max-height:300px;}
+/* ===== GPA METER ===== */
+.gpa-meter{width:200px;height:200px;margin:0 auto 20px;position:relative;}
+.gpa-meter svg{transform:rotate(-90deg);}
+.gpa-meter .gpa-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.gpa-text span{font-family:var(--font-head);font-size:2.2rem;font-weight:900;color:var(--yellow);}
+.gpa-text small{display:block;color:var(--muted);font-size:.78rem;}
+/* ===== SUBJECT TABLE ===== */
+.subject-table{width:100%;border-collapse:collapse;margin-top:16px;}
+.subject-table th{color:var(--yellow);font-size:.8rem;letter-spacing:.8px;text-transform:uppercase;padding:10px;text-align:left;border-bottom:1px solid rgba(245,230,66,0.2);}
+.subject-table td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:.9rem;}
+.subject-table tr:hover td{background:rgba(245,230,66,0.04);}
+/* ===== HISTORY ===== */
+.hist-entry{background:var(--card);border:1px solid var(--glass-border);border-radius:12px;padding:16px 20px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;transition:all .3s;}
+.hist-entry:hover{border-color:rgba(245,230,66,0.3);}
+.hist-entry .h-type{font-size:.75rem;color:var(--yellow);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+.hist-entry .h-content{color:var(--text);font-size:.9rem;}
+.hist-entry .h-time{color:var(--muted);font-size:.75rem;}
+/* ===== ABOUT ===== */
+.about-card{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius);padding:48px;backdrop-filter:blur(16px);text-align:center;max-width:800px;margin:0 auto;}
+.about-card h3{font-family:var(--font-head);font-size:1.8rem;font-weight:900;color:var(--yellow);margin-bottom:20px;}
+.about-card p{color:var(--muted);line-height:1.9;font-size:1rem;margin-bottom:16px;}
+.motto-box{background:var(--yellow-dim);border:1px solid var(--glass-border);border-radius:16px;padding:28px;margin-top:28px;}
+.motto-box p{font-family:var(--font-head);font-size:1.3rem;font-weight:700;color:var(--yellow);}
+/* ===== TEAM ===== */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:24px;max-width:1000px;margin:0 auto;}
+.team-card{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:32px 20px;text-align:center;transition:all .4s;cursor:default;backdrop-filter:blur(12px);}
+.team-card:hover{transform:translateY(-8px);border-color:var(--yellow);box-shadow:0 20px 60px rgba(245,230,66,0.12);}
+.team-avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:2.2rem;border:2px solid var(--glass-border);background:rgba(245,230,66,0.08);}
+.team-card:hover .team-avatar{border-color:var(--yellow);}
+.team-name{font-family:var(--font-head);font-weight:700;color:var(--text);font-size:.95rem;}
+.team-role{color:var(--muted);font-size:.78rem;margin-top:4px;}
+/* ===== AI ASSISTANT ===== */
+#aiBtn{position:fixed;bottom:30px;right:30px;z-index:999;width:60px;height:60px;border-radius:50%;background:var(--yellow);border:none;cursor:pointer;font-size:1.6rem;box-shadow:0 0 30px var(--yellow-glow);transition:all .3s;animation:pulse2 2s ease-in-out infinite;}
+#aiBtn:hover{transform:scale(1.1);}
+#aiWindow{position:fixed;bottom:100px;right:30px;z-index:999;width:360px;max-height:520px;background:rgba(10,10,18,0.97);border:1px solid var(--glass-border);border-radius:24px;display:none;flex-direction:column;backdrop-filter:blur(24px);box-shadow:0 20px 80px rgba(0,0,0,0.7),0 0 40px rgba(245,230,66,0.1);}
+#aiWindow.open{display:flex;animation:fadeIn .3s ease;}
+.ai-header{padding:18px 20px;border-bottom:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;}
+.ai-header h4{font-family:var(--font-head);font-weight:700;color:var(--yellow);font-size:.95rem;}
+.ai-close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.2rem;transition:color .2s;}
+.ai-close:hover{color:var(--yellow);}
+.ai-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:340px;}
+.ai-msg{padding:10px 14px;border-radius:14px;font-size:.87rem;max-width:85%;line-height:1.6;animation:fadeIn .3s ease;}
+.ai-msg.bot{background:rgba(245,230,66,0.1);border:1px solid rgba(245,230,66,0.2);color:var(--text);align-self:flex-start;border-radius:14px 14px 14px 4px;}
+.ai-msg.user{background:var(--yellow);color:#000;align-self:flex-end;border-radius:14px 14px 4px 14px;}
+.ai-input-row{padding:12px 16px;border-top:1px solid var(--glass-border);display:flex;gap:8px;}
+.ai-input-row input{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(245,230,66,0.18);border-radius:10px;padding:10px 14px;color:var(--text);font-family:var(--font-body);font-size:.87rem;outline:none;}
+.ai-input-row input:focus{border-color:var(--yellow);}
+.ai-send{background:var(--yellow);color:#000;border:none;border-radius:10px;padding:10px 16px;cursor:pointer;font-weight:700;transition:all .2s;}
+.ai-send:hover{background:var(--yellow2);}
+/* ===== NOTICE MODAL ===== */
+.modal-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:9999;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease;}
+.modal-box{background:rgba(12,12,22,.98);border:1px solid var(--glass-border);border-radius:24px;padding:44px;max-width:440px;width:90%;text-align:center;backdrop-filter:blur(20px);box-shadow:0 0 60px rgba(245,230,66,0.15);}
+.modal-box h3{font-family:var(--font-head);font-size:1.3rem;font-weight:700;color:var(--yellow);margin-bottom:16px;}
+.modal-box p{color:var(--muted);line-height:1.8;font-size:.92rem;margin-bottom:24px;}
+/* ===== EXPENSE TABLE ===== */
+.expense-list{width:100%;border-collapse:collapse;}
+.expense-list th{color:var(--yellow);font-size:.78rem;letter-spacing:.8px;text-transform:uppercase;padding:10px;border-bottom:1px solid rgba(245,230,66,0.2);}
+.expense-list td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:.88rem;}
+/* ===== HABIT TRACKER ===== */
+.habit-row{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+.habit-row:last-child{border-bottom:none;}
+.habit-check{width:20px;height:20px;accent-color:var(--yellow);cursor:pointer;}
+.habit-label{flex:1;font-size:.9rem;}
+.habit-streak{background:var(--yellow-dim);border:1px solid var(--glass-border);border-radius:6px;padding:2px 10px;font-size:.75rem;color:var(--yellow);}
+/* ===== TODO ===== */
+.todo-item{display:flex;align-items:center;gap:12px;padding:12px;background:rgba(255,255,255,0.03);border-radius:10px;margin-bottom:8px;transition:all .3s;}
+.todo-item.done{opacity:.5;text-decoration:line-through;}
+.todo-item .todo-del{margin-left:auto;background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1rem;}
+.todo-item .todo-del:hover{color:#ff6b6b;}
+/* ===== FORMULA FINDER ===== */
+.formula-cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px;}
+.fcat-btn{background:rgba(255,255,255,0.04);border:1px solid rgba(245,230,66,0.18);border-radius:30px;padding:7px 18px;font-size:.82rem;color:var(--muted);cursor:pointer;transition:all .3s;}
+.fcat-btn:hover,.fcat-btn.active{background:var(--yellow-dim);border-color:var(--yellow);color:var(--yellow);}
+.formula-card{background:var(--card);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:24px;margin-bottom:14px;cursor:pointer;transition:all .3s;backdrop-filter:blur(12px);}
+.formula-card:hover{border-color:var(--yellow);}
+.formula-name{font-family:var(--font-head);font-weight:700;color:var(--yellow);margin-bottom:8px;}
+.formula-eq{font-family:monospace;background:rgba(245,230,66,0.08);color:var(--yellow2);padding:8px 14px;border-radius:8px;font-size:1rem;margin-bottom:8px;display:inline-block;}
+.formula-desc{color:var(--muted);font-size:.86rem;line-height:1.6;}
+/* ===== CURRENCY ===== */
+.currency-display{font-family:var(--font-head);font-size:2.5rem;font-weight:900;color:var(--yellow);text-align:center;margin:16px 0;}
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(245,230,66,0.3);border-radius:4px;}
+::-webkit-scrollbar-thumb:hover{background:var(--yellow);}
+/* ===== KEYFRAMES ===== */
+@keyframes floatY{0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);}}
+@keyframes spin{to{transform:rotate(360deg);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+@keyframes pulse2{0%,100%{box-shadow:0 0 20px var(--yellow-glow);}50%{box-shadow:0 0 50px var(--yellow-glow);}}
+@keyframes fadeQuote{0%{opacity:0;transform:translateY(10px);}20%{opacity:1;transform:translateY(0);}80%{opacity:1;transform:translateY(0);}100%{opacity:0;transform:translateY(-10px);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-10px);}to{opacity:1;transform:translateX(0);}}
+@keyframes particleFloat{0%{transform:translateY(100vh) rotate(0deg);opacity:0;}10%{opacity:.6;}90%{opacity:.6;}100%{transform:translateY(-100px) rotate(720deg);opacity:0;}}
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){.cards-grid{grid-template-columns:1fr;}
+.topbar{padding:14px 18px;}.topbar-nav{gap:4px;}.nav-btn{padding:6px 10px;font-size:.75rem;}
+.inner-content{padding:20px 18px;}.dash-hero{padding:40px 18px 20px;}.dash-hero h2{font-size:1.8rem;}}
+@media(max-width:480px){#aiWindow{width:calc(100vw - 20px);right:10px;}
+.calc-buttons{grid-template-columns:repeat(4,1fr);gap:6px;}.calc-btn{padding:14px 8px;font-size:.85rem;}}
+/* ===== PROGRESS BAR ===== */
+.progress-bar-wrap{background:rgba(255,255,255,0.08);border-radius:8px;height:10px;overflow:hidden;margin-top:8px;}
+.progress-bar-fill{height:100%;background:linear-gradient(90deg,var(--yellow),var(--yellow2));border-radius:8px;transition:width .8s cubic-bezier(.23,1,.32,1);}
+/* ===== TOOLTIP ===== */
+.tip{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.5;}
+.badge{background:var(--yellow-dim);border:1px solid var(--glass-border);border-radius:6px;padding:2px 10px;font-size:.76rem;color:var(--yellow);display:inline-block;margin-top:6px;}
+</style>
+</head>
+<body>
+
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
+
+<!-- ======= LOGIN PAGE ======= -->
+<div class="page active" id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="star">✦</span>
+      <h1>MATH GALAXY</h1>
+      <p>Futuristic Calculator Platform</p>
+    </div>
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="loginName" placeholder="Enter your full name">
+    </div>
+    <div class="form-group">
+      <label>Unique Number ID</label>
+      <input type="text" id="loginId" placeholder="e.g. 12345">
+    </div>
+    <div class="form-group">
+      <label>Age</label>
+      <input type="number" id="loginAge" placeholder="Your age">
+    </div>
+    <div class="form-group">
+      <label>Institution Name</label>
+      <input type="text" id="loginInst" placeholder="Your college / university">
+    </div>
+    <button class="btn-login" onclick="doLogin()">✦ Enter Math Galaxy</button>
+  </div>
+</div>
+
+<!-- ======= LOADING PAGE ======= -->
+<div class="page" id="loadingPage">
+  <div class="loading-orb"></div>
+  <div class="loading-quote" id="loadingQuote">Mathematics is the language of the universe.</div>
+  <div class="loading-bar-wrap"><div class="loading-bar" id="loadingBar"></div></div>
+  <p style="color:var(--muted);font-size:.82rem;margin-top:10px">Initializing Math Galaxy...</p>
+</div>
+
+<!-- ======= DASHBOARD ======= -->
+<div class="page" id="dashPage">
+  <div class="topbar">
+    <div class="topbar-logo">MATH <span>GALAXY</span> ✦</div>
+    <div class="topbar-nav">
+      <button class="nav-btn active" onclick="showSub('dashPage')">Home</button>
+      <button class="nav-btn" onclick="showSub('histPage')">History</button>
+      <button class="nav-btn" onclick="showSub('aboutPage')">About</button>
+      <button class="nav-btn" onclick="showSub('teamPage')">Team</button>
+      <button class="nav-btn" onclick="doLogout()">Logout</button>
+    </div>
+    <div class="user-badge" id="userBadge">✦ Guest</div>
+  </div>
+  <div class="dash-hero">
+    <h2 id="dashWelcome">Welcome to Math Galaxy ✦</h2>
+    <p id="dashSub">Your futuristic problem-solving platform</p>
+  </div>
+  <div class="cards-grid">
+    <div class="main-card" onclick="openEngineering()">
+      <span class="card-icon">⚙️</span>
+      <div class="card-title">Engineering Calculator</div>
+      <div class="card-desc">Advanced math tools — matrices, calculus, vectors, Laplace transforms, graph plotting and more.</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="main-card" onclick="showSub('lifePage')">
+      <span class="card-icon">🌍</span>
+      <div class="card-title">Lifestyle Calculator</div>
+      <div class="card-desc">Currency converter, expense tracker, BMI, calorie tracker, habit tracker and savings planner.</div>
+      <div class="card-arrow">→</div>
+    </div>
+    <div class="main-card" onclick="showSub('studPage')">
+      <span class="card-icon">🎓</span>
+      <div class="card-title">Student Calculator</div>
+      <div class="card-desc">GPA calculator, marks percentage, CGPA, study planner, college expense tracker.</div>
+      <div class="card-arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= ENGINEERING CALCULATOR PAGE ======= -->
+<div class="page" id="calcPage">
+  <div class="inner-header">
+    <button class="back-btn" onclick="showSub('dashPage')">←</button>
+    <h2>⚙️ Engineering Calculator</h2>
+  </div>
+  <div class="inner-content">
+    <div class="tool-grid">
+      <div class="tool-card" onclick="showCalc('basicCalc')"><div class="t-icon">🔢</div><div class="t-name">Basic Calculator</div></div>
+      <div class="tool-card" onclick="showCalc('formulaFinder')"><div class="t-icon">📐</div><div class="t-name">Formula Finder</div></div>
+      <div class="tool-card" onclick="showCalc('matrixCalc')"><div class="t-icon">🔳</div><div class="t-name">Matrix Calculator</div></div>
+      <div class="tool-card" onclick="showCalc('eqSolver')"><div class="t-icon">⚡</div><div class="t-name">Equation Solver</div></div>
+      <div class="tool-card" onclick="showCalc('calcSolver')"><div class="t-icon">∫</div><div class="t-name">Calculus Solver</div></div>
+      <div class="tool-card" onclick="showCalc('vectorCalc')"><div class="t-icon">↗️</div><div class="t-name">Vector Algebra</div></div>
+      <div class="tool-card" onclick="showCalc('laplaceCalc')"><div class="t-icon">🔄</div><div class="t-name">Laplace Transform</div></div>
+      <div class="tool-card" onclick="showCalc('complexCalc')"><div class="t-icon">🌀</div><div class="t-name">Complex Numbers</div></div>
+      <div class="tool-card" onclick="showCalc('probCalc')"><div class="t-icon">🎲</div><div class="t-name">Probability</div></div>
+      <div class="tool-card" onclick="showCalc('primeCheck')"><div class="t-icon">🔑</div><div class="t-name">Prime Checker</div></div>
+      <div class="tool-card" onclick="showCalc('unitConv')"><div class="t-icon">⚖️</div><div class="t-name">Unit Converter</div></div>
+      <div class="tool-card" onclick="showCalc('graphPlot')"><div class="t-icon">📈</div><div class="t-name">Graph Plotter</div></div>
+      <div class="tool-card" onclick="showCalc('eigenCalc')"><div class="t-icon">λ</div><div class="t-name">Eigenvalue Calc</div></div>
+      <div class="tool-card" onclick="showCalc('crCalc')"><div class="t-icon">🔬</div><div class="t-name">Cauchy-Riemann</div></div>
+    </div>
+
+    <!-- BASIC CALCULATOR -->
+    <div class="calc-panel" id="basicCalc">
+      <h3>🔢 Basic Calculator</h3>
+      <div class="calc-display"><div class="expr" id="bcExpr"></div><div id="bcDisp">0</div></div>
+      <div class="calc-buttons">
+        <button class="calc-btn clr" onclick="bcAction('C')">C</button>
+        <button class="calc-btn op" onclick="bcAction('%')">%</button>
+        <button class="calc-btn op" onclick="bcAction('//')">÷÷</button>
+        <button class="calc-btn op" onclick="bcAction('/')">÷</button>
+        <button class="calc-btn" onclick="bcAction('7')">7</button>
+        <button class="calc-btn" onclick="bcAction('8')">8</button>
+        <button class="calc-btn" onclick="bcAction('9')">9</button>
+        <button class="calc-btn op" onclick="bcAction('*')">×</button>
+        <button class="calc-btn" onclick="bcAction('4')">4</button>
+        <button class="calc-btn" onclick="bcAction('5')">5</button>
+        <button class="calc-btn" onclick="bcAction('6')">6</button>
+        <button class="calc-btn op" onclick="bcAction('-')">−</button>
+        <button class="calc-btn" onclick="bcAction('1')">1</button>
+        <button class="calc-btn" onclick="bcAction('2')">2</button>
+        <button class="calc-btn" onclick="bcAction('3')">3</button>
+        <button class="calc-btn op" onclick="bcAction('+')">+</button>
+        <button class="calc-btn" onclick="bcAction('0')" style="grid-column:span 2">0</button>
+        <button class="calc-btn" onclick="bcAction('.')">.</button>
+        <button class="calc-btn eq" onclick="bcAction('=')">＝</button>
+      </div>
+    </div>
+
+    <!-- FORMULA FINDER -->
+    <div class="calc-panel" id="formulaFinder">
+      <h3>📐 Formula Finder</h3>
+      <div class="inp-group" style="margin-bottom:18px">
+        <input type="text" id="formulaSearch" placeholder="Search formulas..." oninput="filterFormulas()" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(245,230,66,.18);border-radius:10px;padding:12px 16px;color:var(--text);font-family:var(--font-body);outline:none;">
+      </div>
+      <div class="formula-cats" id="formulaCats"></div>
+      <div id="formulaList"></div>
+    </div>
+
+    <!-- MATRIX CALCULATOR -->
+    <div class="calc-panel" id="matrixCalc">
+      <h3>🔳 Matrix Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Size</label>
+          <select id="matSize" onchange="buildMatrix()">
+            <option value="2">2×2</option>
+            <option value="3">3×3</option>
+          </select>
+        </div>
+        <div class="inp-group">
+          <label>Operation</label>
+          <select id="matOp">
+            <option value="det">Determinant</option>
+            <option value="inv">Inverse</option>
+            <option value="mul">Multiply A×B</option>
+            <option value="add">Add A+B</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:16px" id="matrixInputs">
+        <div><div style="color:var(--yellow);font-weight:700;margin-bottom:8px">Matrix A</div><div class="matrix-grid" id="matA"></div></div>
+        <div><div style="color:var(--yellow);font-weight:700;margin-bottom:8px">Matrix B</div><div class="matrix-grid" id="matB"></div></div>
+      </div>
+      <button class="btn-calc" onclick="solveMatrix()">Calculate</button>
+      <div class="result-box" id="matResult"></div>
+    </div>
+
+    <!-- EQUATION SOLVER -->
+    <div class="calc-panel" id="eqSolver">
+      <h3>⚡ Equation Solver</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Type</label>
+          <select id="eqType">
+            <option value="linear">Linear  ax + b = 0</option>
+            <option value="quad">Quadratic  ax²+bx+c=0</option>
+          </select>
+        </div>
+        <div class="inp-group"><label>a</label><input type="number" id="eqA" value="1"></div>
+        <div class="inp-group"><label>b</label><input type="number" id="eqB" value="-3"></div>
+        <div class="inp-group"><label>c (for quad)</label><input type="number" id="eqC" value="2"></div>
+      </div>
+      <button class="btn-calc" onclick="solveEq()">Solve</button>
+      <div class="result-box" id="eqResult"></div>
+    </div>
+
+    <!-- CALCULUS SOLVER -->
+    <div class="calc-panel" id="calcSolver">
+      <h3>∫ Calculus Solver</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Operation</label>
+          <select id="calcType">
+            <option value="deriv">Derivative (power rule)</option>
+            <option value="integ">Integral (power rule)</option>
+            <option value="limit">Limit as x→c</option>
+          </select>
+        </div>
+        <div class="inp-group"><label>Coefficient (a)</label><input type="number" id="calcA" value="3" placeholder="a in ax^n"></div>
+        <div class="inp-group"><label>Power (n)</label><input type="number" id="calcN" value="2" placeholder="n in ax^n"></div>
+        <div class="inp-group"><label>x→c (for limit)</label><input type="number" id="calcC" value="2"></div>
+      </div>
+      <button class="btn-calc" onclick="solveCalc()">Solve</button>
+      <div class="result-box" id="calcResult"></div>
+    </div>
+
+    <!-- VECTOR ALGEBRA -->
+    <div class="calc-panel" id="vectorCalc">
+      <h3>↗️ Vector Algebra</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>A: x</label><input type="number" id="vAx" value="1"></div>
+        <div class="inp-group"><label>A: y</label><input type="number" id="vAy" value="2"></div>
+        <div class="inp-group"><label>A: z</label><input type="number" id="vAz" value="3"></div>
+      </div>
+      <div class="input-row">
+        <div class="inp-group"><label>B: x</label><input type="number" id="vBx" value="4"></div>
+        <div class="inp-group"><label>B: y</label><input type="number" id="vBy" value="5"></div>
+        <div class="inp-group"><label>B: z</label><input type="number" id="vBz" value="6"></div>
+      </div>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Operation</label>
+          <select id="vecOp">
+            <option value="add">Addition A+B</option>
+            <option value="dot">Dot Product</option>
+            <option value="cross">Cross Product</option>
+            <option value="mag">Magnitude of A</option>
+            <option value="unit">Unit Vector of A</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="solveVec()">Calculate</button>
+      <div class="result-box" id="vecResult"></div>
+    </div>
+
+    <!-- LAPLACE -->
+    <div class="calc-panel" id="laplaceCalc">
+      <h3>🔄 Laplace Transform</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Common Functions</label>
+          <select id="lapFunc">
+            <option value="1">f(t) = 1</option>
+            <option value="t">f(t) = t</option>
+            <option value="t2">f(t) = t²</option>
+            <option value="tn">f(t) = tⁿ</option>
+            <option value="eat">f(t) = e^(at)</option>
+            <option value="sinat">f(t) = sin(at)</option>
+            <option value="cosat">f(t) = cos(at)</option>
+            <option value="teat">f(t) = t·e^(at)</option>
+          </select>
+        </div>
+        <div class="inp-group"><label>Parameter (a/n)</label><input type="number" id="lapA" value="2"></div>
+      </div>
+      <button class="btn-calc" onclick="solveLaplace()">Find Transform</button>
+      <div class="result-box" id="lapResult"></div>
+    </div>
+
+    <!-- COMPLEX -->
+    <div class="calc-panel" id="complexCalc">
+      <h3>🌀 Complex Number Converter</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Mode</label>
+          <select id="cxMode">
+            <option value="topolar">Rectangular → Polar</option>
+            <option value="torect">Polar → Rectangular</option>
+          </select>
+        </div>
+        <div class="inp-group"><label>Value 1 (a or r)</label><input type="number" id="cxV1" value="3"></div>
+        <div class="inp-group"><label>Value 2 (b or θ°)</label><input type="number" id="cxV2" value="4"></div>
+      </div>
+      <button class="btn-calc" onclick="solveComplex()">Convert</button>
+      <div class="result-box" id="cxResult"></div>
+    </div>
+
+    <!-- PROBABILITY -->
+    <div class="calc-panel" id="probCalc">
+      <h3>🎲 Probability Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Type</label>
+          <select id="probType">
+            <option value="basic">Basic P(A)</option>
+            <option value="comb">Combinations C(n,r)</option>
+            <option value="perm">Permutations P(n,r)</option>
+            <option value="binom">Binomial P(X=k)</option>
+          </select>
+        </div>
+        <div class="inp-group"><label>n (total)</label><input type="number" id="probN" value="10"></div>
+        <div class="inp-group"><label>r / k</label><input type="number" id="probR" value="3"></div>
+        <div class="inp-group"><label>p (for binomial)</label><input type="number" id="probP" value="0.5" step="0.1" min="0" max="1"></div>
+      </div>
+      <button class="btn-calc" onclick="solveProb()">Calculate</button>
+      <div class="result-box" id="probResult"></div>
+    </div>
+
+    <!-- PRIME CHECKER -->
+    <div class="calc-panel" id="primeCheck">
+      <h3>🔑 Prime Number Checker</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Number</label><input type="number" id="primeNum" value="17"></div>
+      </div>
+      <button class="btn-calc" onclick="checkPrime()">Check</button>
+      <div class="result-box" id="primeResult"></div>
+    </div>
+
+    <!-- UNIT CONVERTER -->
+    <div class="calc-panel" id="unitConv">
+      <h3>⚖️ Unit Converter</h3>
+      <div class="input-row">
+        <div class="inp-group">
+          <label>Category</label>
+          <select id="unitCat" onchange="updateUnitSelects()">
+            <option value="length">Length</option>
+            <option value="mass">Mass</option>
+            <option value="temp">Temperature</option>
+            <option value="area">Area</option>
+            <option value="volume">Volume</option>
+            <option value="speed">Speed</option>
+            <option value="time">Time</option>
+          </select>
+        </div>
+        <div class="inp-group"><label>From</label><select id="unitFrom"></select></div>
+        <div class="inp-group"><label>To</label><select id="unitTo"></select></div>
+        <div class="inp-group"><label>Value</label><input type="number" id="unitVal" value="1"></div>
+      </div>
+      <button class="btn-calc" onclick="convertUnit()">Convert</button>
+      <div class="result-box" id="unitResult"></div>
+    </div>
+
+    <!-- GRAPH PLOTTER -->
+    <div class="calc-panel" id="graphPlot">
+      <h3>📈 Graph Plotter</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Function f(x)</label><input type="text" id="graphFunc" value="Math.sin(x)" placeholder="e.g. Math.sin(x), x*x"></div>
+        <div class="inp-group"><label>x from</label><input type="number" id="graphXmin" value="-10"></div>
+        <div class="inp-group"><label>x to</label><input type="number" id="graphXmax" value="10"></div>
+      </div>
+      <button class="btn-calc" onclick="plotGraph()">Plot</button>
+      <div class="chart-wrap"><canvas id="graphCanvas"></canvas></div>
+    </div>
+
+    <!-- EIGENVALUE -->
+    <div class="calc-panel" id="eigenCalc">
+      <h3>λ Eigenvalue Calculator (2×2)</h3>
+      <p class="tip" style="margin-bottom:16px">For matrix [[a,b],[c,d]], eigenvalues λ satisfy: λ² - (a+d)λ + (ad-bc) = 0</p>
+      <div id="eigenInputs">
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <input class="matrix-input" id="eig00" value="4"> <input class="matrix-input" id="eig01" value="1">
+        </div>
+        <div style="display:flex;gap:8px">
+          <input class="matrix-input" id="eig10" value="2"> <input class="matrix-input" id="eig11" value="3">
+        </div>
+      </div>
+      <button class="btn-calc" onclick="solveEigen()" style="margin-top:16px">Find Eigenvalues</button>
+      <div class="result-box" id="eigenResult"></div>
+    </div>
+
+    <!-- CAUCHY-RIEMANN -->
+    <div class="calc-panel" id="crCalc">
+      <h3>🔬 Cauchy-Riemann Equation Checker</h3>
+      <p class="tip" style="margin-bottom:16px">Enter partial derivatives of u and v for f(z) = u + iv. CR conditions: ∂u/∂x = ∂v/∂y and ∂u/∂y = −∂v/∂x</p>
+      <div class="input-row">
+        <div class="inp-group"><label>∂u/∂x</label><input type="number" id="crUx" value="2"></div>
+        <div class="inp-group"><label>∂u/∂y</label><input type="number" id="crUy" value="-3"></div>
+        <div class="inp-group"><label>∂v/∂x</label><input type="number" id="crVx" value="3"></div>
+        <div class="inp-group"><label>∂v/∂y</label><input type="number" id="crVy" value="2"></div>
+      </div>
+      <button class="btn-calc" onclick="checkCR()">Check</button>
+      <div class="result-box" id="crResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= LIFESTYLE PAGE ======= -->
+<div class="page" id="lifePage">
+  <div class="inner-header">
+    <button class="back-btn" onclick="showSub('dashPage')">←</button>
+    <h2>🌍 Lifestyle Calculator</h2>
+  </div>
+  <div class="inner-content">
+    <div class="tool-grid">
+      <div class="tool-card" onclick="showCalc('currencyConv')"><div class="t-icon">💱</div><div class="t-name">Currency Converter</div></div>
+      <div class="tool-card" onclick="showCalc('expenseTracker')"><div class="t-icon">💸</div><div class="t-name">Expense Tracker</div></div>
+      <div class="tool-card" onclick="showCalc('electricBill')"><div class="t-icon">⚡</div><div class="t-name">Electricity Bill</div></div>
+      <div class="tool-card" onclick="showCalc('budgetCalc')"><div class="t-icon">🏠</div><div class="t-name">Household Budget</div></div>
+      <div class="tool-card" onclick="showCalc('todoPlanner')"><div class="t-icon">✅</div><div class="t-name">Daily Planner</div></div>
+      <div class="tool-card" onclick="showCalc('bmiCalc')"><div class="t-icon">⚖️</div><div class="t-name">BMI & Calorie</div></div>
+      <div class="tool-card" onclick="showCalc('habitTracker')"><div class="t-icon">🌟</div><div class="t-name">Habit Tracker</div></div>
+      <div class="tool-card" onclick="showCalc('licCalc')"><div class="t-icon">💰</div><div class="t-name">LIC Savings</div></div>
+    </div>
+
+    <!-- CURRENCY CONVERTER -->
+    <div class="calc-panel" id="currencyConv">
+      <h3>💱 Global Currency Converter</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Amount</label><input type="number" id="curAmt" value="100"></div>
+        <div class="inp-group">
+          <label>From</label>
+          <select id="curFrom"></select>
+        </div>
+        <div class="inp-group">
+          <label>To</label>
+          <select id="curTo"></select>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="convertCurrency()">Convert</button>
+      <button class="btn-sec" onclick="swapCurrency()">⇄ Swap</button>
+      <div class="result-box" id="curResult"><div class="result-label">Result</div><div class="currency-display" id="curDisplay">—</div><div class="tip" id="curRate"></div></div>
+    </div>
+
+    <!-- EXPENSE TRACKER -->
+    <div class="calc-panel" id="expenseTracker">
+      <h3>💸 Daily Expense Tracker</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Item Name</label><input type="text" id="expItem" placeholder="e.g. Coffee"></div>
+        <div class="inp-group"><label>Amount (₹)</label><input type="number" id="expAmt" value="50"></div>
+      </div>
+      <button class="btn-calc" onclick="addExpense()">+ Add Expense</button>
+      <div id="expenseAlert" style="margin-top:14px"></div>
+      <table class="expense-list" style="margin-top:16px">
+        <thead><tr><th>Item</th><th>Amount</th><th>Date</th></tr></thead>
+        <tbody id="expenseTable"></tbody>
+      </table>
+      <div style="margin-top:14px;color:var(--yellow);font-weight:700" id="expTotal">Total: ₹0</div>
+      <div class="chart-wrap" style="margin-top:16px"><canvas id="expenseChart"></canvas></div>
+    </div>
+
+    <!-- ELECTRICITY BILL -->
+    <div class="calc-panel" id="electricBill">
+      <h3>⚡ Electricity Bill Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Appliance</label><input type="text" id="appName" placeholder="e.g. Fan"></div>
+        <div class="inp-group"><label>Wattage (W)</label><input type="number" id="appWatt" value="75"></div>
+        <div class="inp-group"><label>Hours/Day</label><input type="number" id="appHours" value="8"></div>
+        <div class="inp-group"><label>Days/Month</label><input type="number" id="appDays" value="30"></div>
+        <div class="inp-group"><label>Rate (₹/kWh)</label><input type="number" id="billRate" value="6" step="0.1"></div>
+      </div>
+      <button class="btn-calc" onclick="calcElec()">Calculate Bill</button>
+      <div class="result-box" id="elecResult"></div>
+    </div>
+
+    <!-- HOUSEHOLD BUDGET -->
+    <div class="calc-panel" id="budgetCalc">
+      <h3>🏠 Household Budget Per Person</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Monthly Income (₹)</label><input type="number" id="budIncome" value="30000"></div>
+        <div class="inp-group"><label>Rent</label><input type="number" id="budRent" value="8000"></div>
+        <div class="inp-group"><label>Food</label><input type="number" id="budFood" value="5000"></div>
+        <div class="inp-group"><label>Transport</label><input type="number" id="budTrans" value="2000"></div>
+        <div class="inp-group"><label>Utilities</label><input type="number" id="budUtil" value="1500"></div>
+        <div class="inp-group"><label>Entertainment</label><input type="number" id="budEnt" value="1000"></div>
+        <div class="inp-group"><label>Other</label><input type="number" id="budOther" value="500"></div>
+      </div>
+      <button class="btn-calc" onclick="calcBudget()">Analyse</button>
+      <div class="result-box" id="budResult"></div>
+      <div class="chart-wrap" style="display:none" id="budChartWrap"><canvas id="budChart"></canvas></div>
+    </div>
+
+    <!-- TODO PLANNER -->
+    <div class="calc-panel" id="todoPlanner">
+      <h3>✅ Daily Progress Planner</h3>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <input type="text" id="todoInput" placeholder="Add a task..." style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(245,230,66,.18);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font-body);outline:none;">
+        <button class="btn-calc" onclick="addTodo()" style="margin-top:0">+ Add</button>
+      </div>
+      <div id="todoList"></div>
+      <div style="margin-top:20px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--muted);font-size:.85rem">Progress</span><span id="todoPct" style="color:var(--yellow);font-weight:700">0%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="todoBar" style="width:0%"></div></div>
+      </div>
+      <div class="chart-wrap" style="margin-top:20px"><canvas id="todoChart"></canvas></div>
+    </div>
+
+    <!-- BMI -->
+    <div class="calc-panel" id="bmiCalc">
+      <h3>⚖️ BMI & Calorie Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Weight (kg)</label><input type="number" id="bmiWeight" value="65"></div>
+        <div class="inp-group"><label>Height (cm)</label><input type="number" id="bmiHeight" value="170"></div>
+        <div class="inp-group"><label>Age</label><input type="number" id="bmiAge" value="20"></div>
+        <div class="inp-group">
+          <label>Gender</label>
+          <select id="bmiGender">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+        <div class="inp-group">
+          <label>Activity Level</label>
+          <select id="bmiActivity">
+            <option value="1.2">Sedentary</option>
+            <option value="1.375">Lightly Active</option>
+            <option value="1.55" selected>Moderately Active</option>
+            <option value="1.725">Very Active</option>
+            <option value="1.9">Extra Active</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-calc" onclick="calcBMI()">Calculate</button>
+      <div class="result-box" id="bmiResult"></div>
+    </div>
+
+    <!-- HABIT TRACKER -->
+    <div class="calc-panel" id="habitTracker">
+      <h3>🌟 Habit Tracker</h3>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <input type="text" id="habitInput" placeholder="Add habit..." style="flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(245,230,66,.18);border-radius:10px;padding:11px 14px;color:var(--text);font-family:var(--font-body);outline:none;">
+        <button class="btn-calc" onclick="addHabit()" style="margin-top:0">+ Add</button>
+      </div>
+      <div id="habitList"></div>
+      <div class="chart-wrap" style="margin-top:20px"><canvas id="habitChart"></canvas></div>
+    </div>
+
+    <!-- LIC CALCULATOR -->
+    <div class="calc-panel" id="licCalc">
+      <h3>💰 LIC Monthly Savings Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Monthly Saving (₹)</label><input type="number" id="licMonthly" value="2000"></div>
+        <div class="inp-group"><label>Years</label><input type="number" id="licYears" value="10"></div>
+        <div class="inp-group"><label>Annual Interest (%)</label><input type="number" id="licRate" value="8" step="0.1"></div>
+      </div>
+      <button class="btn-calc" onclick="calcLIC()">Calculate</button>
+      <div class="result-box" id="licResult"></div>
+      <div class="chart-wrap" style="display:none" id="licChartWrap"><canvas id="licChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= STUDENT PAGE ======= -->
+<div class="page" id="studPage">
+  <div class="inner-header">
+    <button class="back-btn" onclick="showSub('dashPage')">←</button>
+    <h2>🎓 Student Calculator</h2>
+  </div>
+  <div class="inner-content">
+    <div class="tool-grid">
+      <div class="tool-card" onclick="showCalc('marksPct')"><div class="t-icon">📊</div><div class="t-name">Marks Percentage</div></div>
+      <div class="tool-card" onclick="showCalc('gpaCalc')"><div class="t-icon">🏅</div><div class="t-name">GPA Calculator</div></div>
+      <div class="tool-card" onclick="showCalc('cgpaCalc')"><div class="t-icon">📈</div><div class="t-name">CGPA Calculator</div></div>
+      <div class="tool-card" onclick="showCalc('gpaToPct')"><div class="t-icon">🔄</div><div class="t-name">GPA to Percentage</div></div>
+      <div class="tool-card" onclick="showCalc('studProgress')"><div class="t-icon">📚</div><div class="t-name">Study Progress</div></div>
+      <div class="tool-card" onclick="showCalc('collegeExp')"><div class="t-icon">🏫</div><div class="t-name">College Expense</div></div>
+    </div>
+
+    <!-- MARKS PERCENTAGE -->
+    <div class="calc-panel" id="marksPct">
+      <h3>📊 Marks Percentage Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Marks Obtained</label><input type="number" id="mksObt" value="450"></div>
+        <div class="inp-group"><label>Total Marks</label><input type="number" id="mksTot" value="500"></div>
+      </div>
+      <button class="btn-calc" onclick="calcMarks()">Calculate %</button>
+      <div class="result-box" id="mksResult"></div>
+    </div>
+
+    <!-- GPA CALCULATOR -->
+    <div class="calc-panel" id="gpaCalc">
+      <h3>🏅 GPA Calculator (10-point scale)</h3>
+      <p class="tip" style="margin-bottom:16px">O=10, A+=9, A=8, B+=7, B=6, C=5, RA/F=0</p>
+      <div id="gpaSubjects"></div>
+      <button class="btn-sec" onclick="addGpaSubject()" style="margin-top:10px;margin-left:0">+ Add Subject</button>
+      <button class="btn-calc" onclick="calcGPA()" style="margin-left:10px">Calculate GPA</button>
+      <div class="result-box" id="gpaResult">
+        <div class="gpa-meter">
+          <svg viewBox="0 0 120 120" width="120" height="120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="12"/>
+            <circle cx="60" cy="60" r="50" fill="none" stroke="var(--yellow)" stroke-width="12" stroke-dasharray="314" stroke-dashoffset="314" id="gpaMeterCircle" stroke-linecap="round"/>
+          </svg>
+          <div class="gpa-text"><span id="gpaVal">0.00</span><small>/ 10.0</small></div>
+        </div>
+        <table class="subject-table" id="gpaTable"><thead><tr><th>Subject</th><th>Credits</th><th>Grade</th><th>Points</th></tr></thead><tbody id="gpaTableBody"></tbody></table>
+      </div>
+    </div>
+
+    <!-- CGPA -->
+    <div class="calc-panel" id="cgpaCalc">
+      <h3>📈 CGPA Calculator</h3>
+      <div id="cgpaSems"></div>
+      <button class="btn-sec" onclick="addCgpaSem()" style="margin-top:10px;margin-left:0">+ Add Semester</button>
+      <button class="btn-calc" onclick="calcCGPA()" style="margin-left:10px">Calculate CGPA</button>
+      <div class="result-box" id="cgpaResult"></div>
+    </div>
+
+    <!-- GPA TO PCT -->
+    <div class="calc-panel" id="gpaToPct">
+      <h3>🔄 GPA to Percentage Converter</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>GPA (out of 10)</label><input type="number" id="gpa2pct" value="8.5" step="0.01"></div>
+      </div>
+      <button class="btn-calc" onclick="convertGpa()">Convert</button>
+      <div class="result-box" id="gpa2pctResult"></div>
+    </div>
+
+    <!-- STUDY PROGRESS -->
+    <div class="calc-panel" id="studProgress">
+      <h3>📚 Study Progress Tracker</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Subject</label><input type="text" id="studSub" placeholder="e.g. Mathematics"></div>
+        <div class="inp-group"><label>Topics Done</label><input type="number" id="studDone" value="12"></div>
+        <div class="inp-group"><label>Total Topics</label><input type="number" id="studTotal" value="20"></div>
+      </div>
+      <button class="btn-calc" onclick="addStudProgress()">+ Track</button>
+      <div id="studProgressList" style="margin-top:16px"></div>
+    </div>
+
+    <!-- COLLEGE EXPENSE -->
+    <div class="calc-panel" id="collegeExp">
+      <h3>🏫 College Expense Calculator</h3>
+      <div class="input-row">
+        <div class="inp-group"><label>Tuition (₹/semester)</label><input type="number" id="colTuition" value="30000"></div>
+        <div class="inp-group"><label>Hostel</label><input type="number" id="colHostel" value="10000"></div>
+        <div class="inp-group"><label>Food</label><input type="number" id="colFood" value="5000"></div>
+        <div class="inp-group"><label>Books</label><input type="number" id="colBooks" value="2000"></div>
+        <div class="inp-group"><label>Transport</label><input type="number" id="colTrans" value="1500"></div>
+        <div class="inp-group"><label>Other</label><input type="number" id="colOther" value="1000"></div>
+        <div class="inp-group"><label>No. of Semesters</label><input type="number" id="colSems" value="8"></div>
+      </div>
+      <button class="btn-calc" onclick="calcColExp()">Calculate</button>
+      <div class="result-box" id="colResult"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= HISTORY PAGE ======= -->
+<div class="page" id="histPage">
+  <div class="inner-header">
+    <button class="back-btn" onclick="showSub('dashPage')">←</button>
+    <h2>📜 History</h2>
+  </div>
+  <div class="inner-content">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <p style="color:var(--muted)">All your saved calculations and entries.</p>
+      <button class="btn-sec" onclick="clearHistory()" style="margin-top:0;padding:8px 18px;font-size:.82rem">Clear All</button>
+    </div>
+    <div id="histList"><p style="color:var(--muted);text-align:center;margin-top:40px">No history yet. Start calculating!</p></div>
+  </div>
+</div>
+
+<!-- ======= ABOUT PAGE ======= -->
+<div class="page" id="aboutPage">
+  <div class="inner-header">
+    <button class="back-btn" onclick="showSub('dashPage')">←</button>
+    <h2>ℹ️ About</h2>
+  </div>
+  <div class="inner-content">
+    <div class="about-card">
+      <h3>✦ Math Galaxy</h3>
+      <p>Math Galaxy is a futuristic calculator platform designed to help students and engineers solve real-world problems using mathematics.</p>
+      <p>Our mission is to make mathematics practical, accessible, and visually engaging for every student.</p>
+      <p>Built for engineering students and college students who want a single intelligent dashboard combining academic calculators, life tools, and student utilities.</p>
+      <div class="motto-box">
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:8px;font-weight:400">Our Motto</p>
+        <p>Work with will. Study with will. ✦</p>
+      </div>
+      <div class="motto-box" style="margin-top:16px">
+        <p style="font-size:.85rem;color:var(--muted);margin-bottom:8px;font-weight:400">Our Vision</p>
+        <p style="font-size:1rem">To transform mathematics into a powerful everyday problem-solving tool.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= TEAM PAGE ======= -->
+<div class="page" id="teamPage">
+  <div class="inner-header">
+    <button class="back-btn" onclick="showSub('dashPage')">←</button>
+    <h2>👥 Team — ECE Warriors</h2>
+  </div>
+  <div class="inner-content">
+    <p style="color:var(--muted);text-align:center;margin-bottom:32px">The brilliant minds behind Math Galaxy.</p>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-avatar">👨‍💻</div><div class="team-name">MUTHARASU</div><div class="team-role">ECE Warriors</div></div>
+      <div class="team-card"><div class="team-avatar">👨‍🔬</div><div class="team-name">MOKESH</div><div class="team-role">ECE Warriors</div></div>
+      <div class="team-card"><div class="team-avatar">👩‍💼</div><div class="team-name">IBHI</div><div class="team-role">ECE Warriors</div></div>
+      <div class="team-card"><div class="team-avatar">👩‍🎓</div><div class="team-name">KAMITHA</div><div class="team-role">ECE Warriors</div></div>
+      <div class="team-card"><div class="team-avatar">👨‍🏫</div><div class="team-name">MOHAMMED JUHAIL</div><div class="team-role">ECE Warriors</div></div>
+      <div class="team-card"><div class="team-avatar">👨‍💡</div><div class="team-name">MITHILESH KUMAR</div><div class="team-role">ECE Warriors</div></div>
+      <div class="team-card"><div class="team-avatar">👨‍🚀</div><div class="team-name">HARISH KAMALAN</div><div class="team-role">ECE Warriors</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ENGINEERING NOTICE MODAL -->
+<div id="engModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:rgba(10,10,20,0.98);border:1px solid rgba(245,230,66,0.3);border-radius:28px;padding:48px 40px;max-width:440px;width:90%;text-align:center;backdrop-filter:blur(24px);box-shadow:0 0 80px rgba(245,230,66,0.12),0 20px 60px rgba(0,0,0,0.8);animation:fadeIn .3s ease;">
+    <div style="font-size:3rem;margin-bottom:16px;">⚙️</div>
+    <h3 style="font-family:var(--font-head);font-size:1.25rem;font-weight:700;color:var(--yellow);margin-bottom:16px;">Engineering Calculator</h3>
+    <p style="color:var(--muted);line-height:1.8;font-size:.92rem;margin-bottom:10px;">Calculator can solve problems, but using your own knowledge is always better.</p>
+    <p style="background:rgba(255,100,100,0.1);border:1px solid rgba(255,100,100,0.3);border-radius:10px;padding:12px;color:#ff8a80;font-size:.85rem;margin-bottom:28px;">⚠️ Do <strong>NOT</strong> use this calculator during exams.</p>
+    <div style="display:flex;gap:12px;justify-content:center;">
+      <button onclick="closeEngModal()" style="background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 28px;font-family:var(--font-head);font-weight:600;cursor:pointer;font-size:.9rem;transition:all .3s;">Cancel</button>
+      <button onclick="confirmEngOpen()" style="background:var(--yellow);color:#000;border:none;border-radius:12px;padding:12px 32px;font-family:var(--font-head);font-weight:700;cursor:pointer;font-size:.9rem;box-shadow:0 0 20px rgba(245,230,66,0.3);transition:all .3s;">I Understand →</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI ASSISTANT -->
+<button id="aiBtn" title="Math Galaxy AI" onclick="toggleAI()">✦</button>
+<div id="aiWindow">
+  <div class="ai-header">
+    <h4>✦ Math Galaxy AI</h4>
+    <button class="ai-close" onclick="toggleAI()">✕</button>
+  </div>
+  <div class="ai-messages" id="aiMessages">
+    <div class="ai-msg bot">Hello! I'm your Math Galaxy AI Assistant. Ask me any math question, request a formula, or ask me to explain a concept! ✦</div>
+  </div>
+  <div class="ai-input-row">
+    <input type="text" id="aiInput" placeholder="Ask a math question..." onkeydown="if(event.key==='Enter')sendAI()">
+    <button class="ai-send" onclick="sendAI()">→</button>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+let currentUser = null;
+let currentKey = null;
+let graphChart = null;
+let expenseChartInst = null;
+let budChartInst = null;
+let licChartInst = null;
+let todoChartInst = null;
+let habitChartInst = null;
+
+// ===== PARTICLES =====
+(function(){
+  const c=document.getElementById('particles');
+  const ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  resize();window.addEventListener('resize',resize);
+  for(let i=0;i<80;i++){
+    pts.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+.5,
+      vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4,
+      op:Math.random()*.6+.1});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=`rgba(245,230,66,${p.op})`;ctx.fill();
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+    });
+    // draw connections
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){
+          ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(245,230,66,${.12*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ===== STORAGE =====
+function getDB(){return JSON.parse(localStorage.getItem('mathgalaxy_db')||'{}');}
+function saveDB(db){localStorage.setItem('mathgalaxy_db',JSON.stringify(db));}
+function getUserData(){const db=getDB();return db[currentKey]||{history:[],expenses:[],todos:[],habits:[],studProgress:[],gpaSubjects:[],cgpaSems:[],cgpaSubjects:[]};}
+function saveUserData(data){const db=getDB();db[currentKey]=data;saveDB(db);}
+function addHistory(type,content){
+  if(!currentKey)return;
+  const d=getUserData();
+  d.history=d.history||[];
+  d.history.unshift({type,content,time:new Date().toLocaleString()});
+  if(d.history.length>100)d.history.pop();
+  saveUserData(d);
+}
+
+// ===== LOGIN =====
+function doLogin(){
+  const name=document.getElementById('loginName').value.trim();
+  const uid=document.getElementById('loginId').value.trim();
+  const age=document.getElementById('loginAge').value.trim();
+  const inst=document.getElementById('loginInst').value.trim();
+  if(!name||!uid){alert('Please enter Name and ID');return;}
+  currentKey=`${name.toLowerCase()}_${uid}`;
+  const db=getDB();
+  if(!db[currentKey]){db[currentKey]={name,uid,age,inst,history:[],expenses:[],todos:[],habits:[],studProgress:[],cgpaSems:[],gpaSubjects:[]};saveDB(db);}
+  currentUser={name,uid,age,inst};
+  showPage('loadingPage');
+  startLoading();
+}
+
+const QUOTES=[
+  'Mathematics is the language of the universe.',
+  'Every problem has a solution — find it.',
+  'Without mathematics, there\'s nothing you can do.',
+  'Mathematics is not about numbers, but about understanding.',
+  'The only way to learn mathematics is to do mathematics.',
+  'Mathematics is the queen of all sciences.',
+  'A problem is a chance for you to do your best.',
+  'Imagination is more important than knowledge.',
+];
+let qIdx=0;
+function startLoading(){
+  let prog=0;
+  const bar=document.getElementById('loadingBar');
+  const quote=document.getElementById('loadingQuote');
+  quote.textContent=QUOTES[qIdx++%QUOTES.length];
+  const intv=setInterval(()=>{
+    prog+=Math.random()*15+5;
+    if(prog>100)prog=100;
+    bar.style.width=prog+'%';
+    if(prog<100){quote.textContent=QUOTES[qIdx++%QUOTES.length];}
+    else{clearInterval(intv);setTimeout(()=>openDash(),500);}
+  },700);
+}
+function openDash(){
+  document.getElementById('dashWelcome').textContent=`Welcome to Math Galaxy, ${currentUser.name} ✦`;
+  document.getElementById('dashSub').textContent=`Thank you for using Math Galaxy.`;
+  document.getElementById('userBadge').textContent=`✦ ${currentUser.name}`;
+  showPage('dashPage');
+  initGpaSubjects();
+  initCgpaSems();
+  loadTodos();
+  loadHabits();
+  loadExpenses();
+  loadStudProgress();
+  updateUnitSelects();
+  initCurrencySelects();
+  buildMatrix();
+}
+function doLogout(){currentUser=null;currentKey=null;showPage('loginPage');}
+function showPage(id){document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');});document.getElementById(id).classList.add('active');}
+function showSub(id){showPage(id);if(id==='histPage')renderHistory();}
+
+// ===== ENGINEERING NAV =====
+function openEngineering(){
+  const m=document.getElementById('engModal');
+  m.style.display='flex';
+}
+function closeEngModal(){
+  document.getElementById('engModal').style.display='none';
+}
+function confirmEngOpen(){
+  document.getElementById('engModal').style.display='none';
+  showPage('calcPage');
+}
+function showCalc(id){
+  document.querySelectorAll('.calc-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id==='formulaFinder')initFormulas();
+  if(id==='unitConv')updateUnitSelects();
+  if(id==='graphPlot')plotGraph();
+  if(id==='gpaCalc')renderGpaSubjects();
+  if(id==='cgpaCalc')renderCgpaSems();
+  if(id==='todoPlanner')renderTodos();
+  if(id==='habitTracker')renderHabits();
+  if(id==='expenseTracker')renderExpenses();
+  if(id==='currencyConv')initCurrencySelects();
+  if(id==='studProgress')renderStudProgress();
+}
+
+// ===== BASIC CALCULATOR =====
+let bcExpr='',bcFresh=false;
+function bcAction(v){
+  const disp=document.getElementById('bcDisp');
+  const exprEl=document.getElementById('bcExpr');
+  if(v==='C'){bcExpr='';disp.textContent='0';exprEl.textContent='';bcFresh=false;return;}
+  if(v==='='){
+    try{
+      let ex=bcExpr.replace(/×/g,'*').replace(/÷÷/g,'Math.floor(').replace(/÷/g,'/').replace(/%/g,'*0.01');
+      if(bcExpr.includes('÷÷'))ex+='/'+bcExpr.split('÷÷')[1]+')';
+      const res=Function('return '+ex)();
+      exprEl.textContent=bcExpr+'=';
+      disp.textContent=res;
+      addHistory('Basic Calc',bcExpr+' = '+res);
+      bcExpr=String(res);bcFresh=true;
+    }catch(e){disp.textContent='Error';bcExpr='';}
+    return;
+  }
+  if(bcFresh&&!'+-*/÷×%'.includes(v)){bcExpr='';}
+  bcFresh=false;
+  bcExpr+=v;
+  exprEl.textContent=bcExpr;
+  disp.textContent=v;
+}
+
+// ===== FORMULA FINDER =====
+const FORMULAS=[
+  {cat:'Algebra',name:'Quadratic Formula',eq:'x = (-b ± √(b²-4ac)) / 2a',desc:'Solves ax²+bx+c=0. The discriminant b²-4ac determines the nature of roots.',vars:'a=leading coefficient, b=middle coefficient, c=constant, x=unknown'},
+  {cat:'Algebra',name:'Binomial Theorem'  ,eq:'(a+b)ⁿ = Σ C(n,k) aⁿ⁻ᵏ bᵏ',desc:'Expands any power of a binomial expression.',vars:'a,b=terms, n=power, k=summation index'},
+  {cat:'Trigonometry',name:'Sine Rule',eq:'a/sin(A) = b/sin(B) = c/sin(C)',desc:'Relates sides and angles of any triangle.',vars:'a,b,c=sides, A,B,C=opposite angles'},
+  {cat:'Trigonometry',name:"Pythagorean Identity",eq:'sin²θ + cos²θ = 1',desc:'Fundamental identity valid for all angles θ.',vars:'θ=angle in radians or degrees'},
+  {cat:'Trigonometry',name:'Double Angle',eq:'sin(2θ) = 2·sin(θ)·cos(θ)',desc:'Relates double angle to single angle trig functions.',vars:'θ=angle'},
+  {cat:'Calculus',name:'Power Rule (Derivative)',eq:"d/dx[xⁿ] = n·xⁿ⁻¹",desc:'Derivative of a power function.',vars:'n=power, x=variable'},
+  {cat:'Calculus',name:'Chain Rule',eq:'d/dx[f(g(x))] = f\'(g(x))·g\'(x)',desc:'Derivative of composite functions.',vars:'f,g=functions'},
+  {cat:'Calculus',name:'Power Rule (Integral)',eq:'∫xⁿ dx = xⁿ⁺¹/(n+1) + C',desc:'Integral of a power function, n≠-1.',vars:'n=power, C=constant of integration'},
+  {cat:'Calculus',name:"Euler's Number",eq:'e = lim(n→∞)(1 + 1/n)ⁿ ≈ 2.71828',desc:'Base of natural logarithm.',vars:'e≈2.71828, n=integer'},
+  {cat:'Linear Algebra',name:'Determinant 2×2',eq:'det(A) = ad - bc',desc:'For 2×2 matrix [[a,b],[c,d]].',vars:'a,b,c,d=matrix elements'},
+  {cat:'Linear Algebra',name:'Inverse 2×2',eq:'A⁻¹ = (1/det(A))·[[d,-b],[-c,a]]',desc:'Inverse of a 2×2 matrix.',vars:'det(A)=determinant, a,b,c,d=elements'},
+  {cat:'Vector Algebra',name:'Dot Product',eq:'A·B = |A||B|cos(θ)',desc:'Scalar product of two vectors.',vars:'A,B=vectors, θ=angle between them'},
+  {cat:'Vector Algebra',name:'Cross Product Magnitude',eq:'|A×B| = |A||B|sin(θ)',desc:'Magnitude of cross product.',vars:'θ=angle between A and B'},
+  {cat:'Probability',name:'Binomial Probability',eq:'P(X=k) = C(n,k)·pᵏ·(1-p)ⁿ⁻ᵏ',desc:'Probability of k successes in n trials.',vars:'n=trials, k=successes, p=probability'},
+  {cat:'Probability',name:'Bayes Theorem',eq:'P(A|B) = P(B|A)·P(A) / P(B)',desc:'Conditional probability formula.',vars:'A,B=events'},
+  {cat:'Laplace Transform',name:'L{1}',eq:'L{1} = 1/s',desc:'Laplace transform of constant 1.',vars:'s=complex frequency'},
+  {cat:'Laplace Transform',name:'L{eᵃᵗ}',eq:'L{eᵃᵗ} = 1/(s-a)',desc:'Laplace transform of exponential.',vars:'a=constant, s=complex frequency'},
+  {cat:'Laplace Transform',name:'L{sin(at)}',eq:'L{sin(at)} = a/(s²+a²)',desc:'Laplace transform of sine.',vars:'a=frequency, s=complex frequency'},
+  {cat:'Complex Numbers',name:'Euler\'s Formula',eq:'e^(iθ) = cos(θ) + i·sin(θ)',desc:'Links exponential and trigonometric functions.',vars:'θ=angle, i=imaginary unit'},
+  {cat:'Complex Numbers',name:'Modulus',eq:'|z| = √(a² + b²)',desc:'Magnitude of complex number z = a+bi.',vars:'a=real part, b=imaginary part'},
+  {cat:'Engineering Physics',name:'Ohm\'s Law',eq:'V = I·R',desc:'Voltage equals current times resistance.',vars:'V=voltage(V), I=current(A), R=resistance(Ω)'},
+  {cat:'Engineering Physics',name:'Power Equation',eq:'P = V·I = I²R = V²/R',desc:'Electrical power formula.',vars:'P=power(W), V=voltage, I=current, R=resistance'},
+  {cat:'Differential Equations',name:'1st Order Linear ODE',eq:'dy/dx + P(x)y = Q(x)',desc:'Standard form of first order linear ODE.',vars:'P(x),Q(x)=functions of x, y=dependent variable'},
+];
+
+let activeFCat='All';
+function initFormulas(){
+  const cats=['All',...new Set(FORMULAS.map(f=>f.cat))];
+  const cEl=document.getElementById('formulaCats');
+  cEl.innerHTML=cats.map(c=>`<button class="fcat-btn${c===activeFCat?' active':''}" onclick="setFCat('${c}')">${c}</button>`).join('');
+  renderFormulas();
+}
+function setFCat(c){activeFCat=c;initFormulas();}
+function filterFormulas(){renderFormulas();}
+function renderFormulas(){
+  const search=document.getElementById('formulaSearch').value.toLowerCase();
+  const list=FORMULAS.filter(f=>{
+    const matchCat=activeFCat==='All'||f.cat===activeFCat;
+    const matchSearch=f.name.toLowerCase().includes(search)||f.desc.toLowerCase().includes(search)||f.eq.toLowerCase().includes(search);
+    return matchCat&&matchSearch;
+  });
+  document.getElementById('formulaList').innerHTML=list.map(f=>`
+    <div class="formula-card">
+      <div class="formula-name">${f.name} <span class="badge">${f.cat}</span></div>
+      <div class="formula-eq">${f.eq}</div>
+      <div class="formula-desc">${f.desc}</div>
+      <div class="tip" style="margin-top:8px"><b style="color:var(--yellow)">Variables:</b> ${f.vars}</div>
+    </div>
+  `).join('');
+}
+
+// ===== MATRIX CALCULATOR =====
+function buildMatrix(){
+  const n=parseInt(document.getElementById('matSize').value);
+  ['matA','matB'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.style.gridTemplateColumns=`repeat(${n},60px)`;
+    let html='';
+    for(let i=0;i<n;i++)for(let j=0;j<n;j++)html+=`<input class="matrix-input" id="${id}_${i}_${j}" value="${i===j?1:0}" type="number">`;
+    el.innerHTML=html;
+  });
+}
+function getMatrix(id,n){return Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>parseFloat(document.getElementById(`${id}_${i}_${j}`).value)||0));}
+function det2(m){return m[0][0]*m[1][1]-m[0][1]*m[1][0];}
+function det3(m){return m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])-m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])+m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0]);}
+function matStr(m){return m.map(r=>'['+r.join(', ')+']').join('\n');}
+function solveMatrix(){
+  const n=parseInt(document.getElementById('matSize').value);
+  const op=document.getElementById('matOp').value;
+  const A=getMatrix('matA',n),B=getMatrix('matB',n);
+  let html='<div class="result-label">Result</div>';
+  const steps=[];
+  if(op==='det'){
+    const d=n===2?det2(A):det3(A);
+    steps.push({n:1,t:'Identify the matrix A'});
+    steps.push({n:2,t:'Apply the '+n+'×'+n+' determinant formula'});
+    steps.push({n:3,t:`det(A) = <code>${d.toFixed(4)}</code>`});
+    html+=`<div class="result-value">det = ${d.toFixed(4)}</div>`;
+    addHistory('Matrix','det(A) = '+d.toFixed(4));
+  }else if(op==='mul'||op==='add'){
+    const C=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>op==='mul'?A[i].reduce((s,_,k)=>s+A[i][k]*B[k][j],0):A[i][j]+B[i][j]));
+    html+=`<pre style="color:var(--yellow);font-size:.9rem;line-height:1.6">${matStr(C)}</pre>`;
+    steps.push({n:1,t:'Take matrices A and B'});
+    steps.push({n:2,t:op==='mul'?'Multiply row by column for each element':'Add corresponding elements'});
+    steps.push({n:3,t:`Result: <code>${matStr(C).replace(/\n/g,' ')}</code>`});
+    addHistory('Matrix',op.toUpperCase()+' result computed');
+  }else if(op==='inv'&&n===2){
+    const d=det2(A);
+    if(Math.abs(d)<1e-10){html+='<div class="result-value" style="color:#ff6b6b">Not invertible (det=0)</div>';}
+    else{
+      const inv=[[A[1][1]/d,-A[0][1]/d],[-A[1][0]/d,A[0][0]/d]];
+      html+=`<pre style="color:var(--yellow);font-size:.9rem;line-height:1.6">${matStr(inv.map(r=>r.map(v=>v.toFixed(3))))}</pre>`;
+      steps.push({n:1,t:`det(A) = <code>${d.toFixed(4)}</code>`});
+      steps.push({n:2,t:'Apply formula A⁻¹ = (1/det)·adj(A)'});
+      steps.push({n:3,t:`Inverse computed above`});
+      addHistory('Matrix','Inverse computed');
+    }
+  }
+  const rb=document.getElementById('matResult');
+  rb.className='result-box show';
+  rb.innerHTML=html+'<div class="steps-box">'+steps.map(s=>`<div class="step"><div class="step-num">${s.n}</div><div class="step-text">${s.t}</div></div>`).join('')+'</div>';
+}
+
+// ===== EQUATION SOLVER =====
+function solveEq(){
+  const type=document.getElementById('eqType').value;
+  const a=parseFloat(document.getElementById('eqA').value);
+  const b=parseFloat(document.getElementById('eqB').value);
+  const c=parseFloat(document.getElementById('eqC').value);
+  let html='<div class="result-label">Solution</div>';
+  let steps=[];
+  if(type==='linear'){
+    const x=-b/a;
+    steps=[{n:1,t:`Equation: <code>${a}x + ${b} = 0</code>`},{n:2,t:`Move constant: <code>${a}x = ${-b}</code>`},{n:3,t:`Divide: <code>x = ${-b}/${a} = ${x.toFixed(4)}</code>`}];
+    html+=`<div class="result-value">x = ${x.toFixed(4)}</div>`;
+    addHistory('Equation Solver',`${a}x+${b}=0 → x=${x.toFixed(4)}`);
+  }else{
+    const disc=b*b-4*a*c;
+    steps=[{n:1,t:`Equation: <code>${a}x²+${b}x+${c}=0</code>`},{n:2,t:`Discriminant Δ = b²-4ac = <code>${disc.toFixed(4)}</code>`}];
+    if(disc<0){
+      const real=-b/(2*a),imag=Math.sqrt(-disc)/(2*a);
+      steps.push({n:3,t:`Complex roots: <code>x = ${real.toFixed(3)} ± ${imag.toFixed(3)}i</code>`});
+      html+=`<div class="result-value">x = ${real.toFixed(3)} ± ${imag.toFixed(3)}i</div>`;
+    }else{
+      const x1=(-b+Math.sqrt(disc))/(2*a),x2=(-b-Math.sqrt(disc))/(2*a);
+      steps.push({n:3,t:`x₁ = <code>${x1.toFixed(4)}</code>, x₂ = <code>${x2.toFixed(4)}</code>`});
+      html+=`<div class="result-value">x₁ = ${x1.toFixed(4)}, x₂ = ${x2.toFixed(4)}</div>`;
+      addHistory('Equation Solver',`${a}x²+${b}x+${c}=0 → x₁=${x1.toFixed(3)}, x₂=${x2.toFixed(3)}`);
+    }
+  }
+  const rb=document.getElementById('eqResult');
+  rb.className='result-box show';
+  rb.innerHTML=html+'<div class="steps-box">'+steps.map(s=>`<div class="step"><div class="step-num">${s.n}</div><div class="step-text">${s.t}</div></div>`).join('')+'</div>';
+}
+
+// ===== CALCULUS SOLVER =====
+function solveCalc(){
+  const type=document.getElementById('calcType').value;
+  const a=parseFloat(document.getElementById('calcA').value);
+  const n=parseFloat(document.getElementById('calcN').value);
+  const cv=parseFloat(document.getElementById('calcC').value);
+  let html='<div class="result-label">Result</div>';
+  let steps=[];
+  if(type==='deriv'){
+    const newCoeff=a*n,newPow=n-1;
+    steps=[{n:1,t:`Function: <code>f(x) = ${a}x^${n}</code>`},{n:2,t:`Apply power rule: d/dx[axⁿ] = n·a·xⁿ⁻¹`},{n:3,t:`f\'(x) = <code>${newCoeff}x^${newPow}</code>`}];
+    html+=`<div class="result-value">f\'(x) = ${newCoeff}x^${newPow}</div>`;
+    addHistory('Calculus',`d/dx[${a}x^${n}] = ${newCoeff}x^${newPow}`);
+  }else if(type==='integ'){
+    const newCoeff=(a/(n+1)),newPow=n+1;
+    steps=[{n:1,t:`Function: <code>f(x) = ${a}x^${n}</code>`},{n:2,t:`Apply power rule: ∫axⁿ dx = axⁿ⁺¹/(n+1) + C`},{n:3,t:`∫f dx = <code>${newCoeff.toFixed(4)}x^${newPow} + C</code>`}];
+    html+=`<div class="result-value">${newCoeff.toFixed(4)}x^${newPow} + C</div>`;
+    addHistory('Calculus',`∫${a}x^${n}dx = ${newCoeff.toFixed(4)}x^${newPow}+C`);
+  }else{
+    const val=a*Math.pow(cv,n);
+    steps=[{n:1,t:`lim(x→${cv}) of <code>${a}x^${n}</code>`},{n:2,t:`Substitute x = ${cv}`},{n:3,t:`= ${a}·(${cv})^${n} = <code>${val.toFixed(4)}</code>`}];
+    html+=`<div class="result-value">${val.toFixed(4)}</div>`;
+    addHistory('Calculus',`lim(x→${cv}) ${a}x^${n} = ${val.toFixed(4)}`);
+  }
+  const rb=document.getElementById('calcResult');
+  rb.className='result-box show';
+  rb.innerHTML=html+'<div class="steps-box">'+steps.map(s=>`<div class="step"><div class="step-num">${s.n}</div><div class="step-text">${s.t}</div></div>`).join('')+'</div>';
+}
+
+// ===== VECTOR =====
+function solveVec(){
+  const ax=+document.getElementById('vAx').value,ay=+document.getElementById('vAy').value,az=+document.getElementById('vAz').value;
+  const bx=+document.getElementById('vBx').value,by=+document.getElementById('vBy').value,bz=+document.getElementById('vBz').value;
+  const op=document.getElementById('vecOp').value;
+  let html='<div class="result-label">Result</div>';
+  let steps=[];
+  if(op==='add'){
+    const r=[ax+bx,ay+by,az+bz];
+    steps=[{n:1,t:`A = <code>(${ax},${ay},${az})</code>, B = <code>(${bx},${by},${bz})</code>`},{n:2,t:'Add component-wise'},{n:3,t:`A+B = <code>(${r[0]},${r[1]},${r[2]})</code>`}];
+    html+=`<div class="result-value">(${r[0]}, ${r[1]}, ${r[2]})</div>`;
+    addHistory('Vector','A+B = ('+r.join(',')+')');
+  }else if(op==='dot'){
+    const d=ax*bx+ay*by+az*bz;
+    steps=[{n:1,t:`A·B = AₓBₓ + AᵧBᵧ + A_zB_z`},{n:2,t:`= ${ax*bx} + ${ay*by} + ${az*bz}`},{n:3,t:`= <code>${d}</code>`}];
+    html+=`<div class="result-value">${d}</div>`;
+    addHistory('Vector','A·B = '+d);
+  }else if(op==='cross'){
+    const r=[ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx];
+    steps=[{n:1,t:'Apply determinant formula for cross product'},{n:2,t:`i: ${ay}×${bz}-${az}×${by} = ${r[0]}`},{n:3,t:`A×B = <code>(${r[0]}, ${r[1]}, ${r[2]})</code>`}];
+    html+=`<div class="result-value">(${r[0]}, ${r[1]}, ${r[2]})</div>`;
+    addHistory('Vector','A×B = ('+r.join(',')+')');
+  }else if(op==='mag'){
+    const m=Math.sqrt(ax*ax+ay*ay+az*az);
+    steps=[{n:1,t:`|A| = √(${ax}² + ${ay}² + ${az}²)`},{n:2,t:`= √${ax*ax+ay*ay+az*az}`},{n:3,t:`= <code>${m.toFixed(4)}</code>`}];
+    html+=`<div class="result-value">|A| = ${m.toFixed(4)}</div>`;
+    addHistory('Vector','|A| = '+m.toFixed(4));
+  }else if(op==='unit'){
+    const m=Math.sqrt(ax*ax+ay*ay+az*az);
+    const u=[ax/m,ay/m,az/m];
+    html+=`<div class="result-value">(${u[0].toFixed(3)}, ${u[1].toFixed(3)}, ${u[2].toFixed(3)})</div>`;
+    addHistory('Vector','Unit A = ('+u.map(v=>v.toFixed(3)).join(',')+')');
+  }
+  const rb=document.getElementById('vecResult');
+  rb.className='result-box show';
+  rb.innerHTML=html+'<div class="steps-box">'+steps.map(s=>`<div class="step"><div class="step-num">${s.n}</div><div class="step-text">${s.t}</div></div>`).join('')+'</div>';
+}
+
+// ===== LAPLACE =====
+const LAP_TABLE={
+  '1':{transform:'1/s',cond:'s > 0'},
+  't':{transform:'1/s²',cond:'s > 0'},
+  't2':{transform:'2/s³',cond:'s > 0'},
+  'tn':{transform:'n!/s^(n+1)',cond:'s > 0'},
+  'eat':{transform:'1/(s-a)',cond:'s > a'},
+  'sinat':{transform:'a/(s²+a²)',cond:'s > 0'},
+  'cosat':{transform:'s/(s²+a²)',cond:'s > 0'},
+  'teat':{transform:'1/(s-a)²',cond:'s > a'},
+};
+function solveLaplace(){
+  const f=document.getElementById('lapFunc').value;
+  const a=parseFloat(document.getElementById('lapA').value);
+  const entry=LAP_TABLE[f];
+  let transform=entry.transform.replace(/n/g,a.toString()).replace(/a/g,a.toString());
+  const rb=document.getElementById('lapResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Laplace Transform</div><div class="result-value">L{f(t)} = ${transform}</div><div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">Identify f(t) and look up the standard Laplace table</div></div><div class="step"><div class="step-num">2</div><div class="step-text">Substitute a = <code>${a}</code></div></div><div class="step"><div class="step-num">3</div><div class="step-text">Result: <code>L{f(t)} = ${transform}</code>, valid for <code>${entry.cond}</code></div></div></div>`;
+  addHistory('Laplace','L{f(t)} = '+transform);
+}
+
+// ===== COMPLEX =====
+function solveComplex(){
+  const mode=document.getElementById('cxMode').value;
+  const v1=parseFloat(document.getElementById('cxV1').value);
+  const v2=parseFloat(document.getElementById('cxV2').value);
+  const rb=document.getElementById('cxResult');
+  let html='<div class="result-label">Result</div>';
+  if(mode==='topolar'){
+    const r=Math.sqrt(v1*v1+v2*v2);
+    const theta=Math.atan2(v2,v1)*180/Math.PI;
+    html+=`<div class="result-value">r = ${r.toFixed(4)}, θ = ${theta.toFixed(4)}°</div>`;
+    html+=`<div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">z = ${v1} + ${v2}i</div></div><div class="step"><div class="step-num">2</div><div class="step-text">r = √(${v1}²+${v2}²) = <code>${r.toFixed(4)}</code></div></div><div class="step"><div class="step-num">3</div><div class="step-text">θ = atan2(${v2},${v1}) = <code>${theta.toFixed(4)}°</code></div></div></div>`;
+    addHistory('Complex',`(${v1}+${v2}i) → r=${r.toFixed(3)}, θ=${theta.toFixed(3)}°`);
+  }else{
+    const re=v1*Math.cos(v2*Math.PI/180);
+    const im=v1*Math.sin(v2*Math.PI/180);
+    html+=`<div class="result-value">${re.toFixed(4)} + ${im.toFixed(4)}i</div>`;
+    addHistory('Complex',`(r=${v1}, θ=${v2}°) → ${re.toFixed(3)}+${im.toFixed(3)}i`);
+  }
+  rb.className='result-box show';
+  rb.innerHTML=html;
+}
+
+// ===== PROBABILITY =====
+function factorial(n){if(n<=1)return 1;let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function comb(n,r){if(r>n)return 0;return factorial(n)/(factorial(r)*factorial(n-r));}
+function solveProb(){
+  const type=document.getElementById('probType').value;
+  const n=parseFloat(document.getElementById('probN').value);
+  const r=parseFloat(document.getElementById('probR').value);
+  const p=parseFloat(document.getElementById('probP').value);
+  const rb=document.getElementById('probResult');
+  let html='<div class="result-label">Result</div>';
+  if(type==='basic'){const res=r/n;html+=`<div class="result-value">P = ${res.toFixed(4)}</div>`;addHistory('Probability',`P=${r}/${n}=${res.toFixed(4)}`);}
+  else if(type==='comb'){const res=comb(n,r);html+=`<div class="result-value">C(${n},${r}) = ${res}</div>`;addHistory('Probability',`C(${n},${r})=${res}`);}
+  else if(type==='perm'){const res=factorial(n)/factorial(n-r);html+=`<div class="result-value">P(${n},${r}) = ${res}</div>`;addHistory('Probability',`P(${n},${r})=${res}`);}
+  else{const res=comb(n,r)*Math.pow(p,r)*Math.pow(1-p,n-r);html+=`<div class="result-value">P(X=${r}) = ${res.toFixed(6)}</div>`;addHistory('Probability',`Binomial P(X=${r})=${res.toFixed(6)}`);}
+  rb.className='result-box show';rb.innerHTML=html;
+}
+
+// ===== PRIME CHECKER =====
+function checkPrime(){
+  const n=parseInt(document.getElementById('primeNum').value);
+  let prime=n>1;
+  for(let i=2;i<=Math.sqrt(n);i++)if(n%i===0){prime=false;break;}
+  const rb=document.getElementById('primeResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Result</div><div class="result-value" style="color:${prime?'var(--yellow)':'#ff6b6b'}">${n} is ${prime?'a PRIME':'NOT a prime'} number</div><div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">Check if ${n} > 1: ${n>1?'Yes':'No'}</div></div><div class="step"><div class="step-num">2</div><div class="step-text">Test divisibility up to √${n} ≈ ${Math.sqrt(n).toFixed(2)}</div></div><div class="step"><div class="step-num">3</div><div class="step-text">${n} is ${prime?'prime — no factors found':'not prime'}</div></div></div>`;
+  addHistory('Prime Check',n+' is '+(prime?'prime':'not prime'));
+}
+
+// ===== UNIT CONVERTER =====
+const UNITS={
+  length:{m:1,km:1000,cm:0.01,mm:0.001,mi:1609.344,ft:0.3048,inch:0.0254,yd:0.9144},
+  mass:{kg:1,g:0.001,lb:0.453592,oz:0.028349,tonne:1000},
+  temp:{C:1,F:1,K:1},
+  area:{m2:1,km2:1e6,cm2:1e-4,ft2:0.0929,acre:4046.86,hectare:1e4},
+  volume:{L:1,mL:0.001,m3:1000,gal:3.78541,pt:0.473176},
+  speed:{mps:1,kph:1/3.6,mph:0.44704,knot:0.514444},
+  time:{s:1,min:60,h:3600,day:86400,week:604800},
+};
+function updateUnitSelects(){
+  const cat=document.getElementById('unitCat').value;
+  const keys=Object.keys(UNITS[cat]);
+  ['unitFrom','unitTo'].forEach(id=>{
+    document.getElementById(id).innerHTML=keys.map(k=>`<option value="${k}">${k}</option>`).join('');
+  });
+  document.getElementById('unitTo').value=keys[1]||keys[0];
+}
+function convertUnit(){
+  const cat=document.getElementById('unitCat').value;
+  const from=document.getElementById('unitFrom').value;
+  const to=document.getElementById('unitTo').value;
+  const val=parseFloat(document.getElementById('unitVal').value);
+  let res;
+  if(cat==='temp'){
+    if(from==='C'&&to==='F')res=val*9/5+32;
+    else if(from==='F'&&to==='C')res=(val-32)*5/9;
+    else if(from==='C'&&to==='K')res=val+273.15;
+    else if(from==='K'&&to==='C')res=val-273.15;
+    else if(from==='F'&&to==='K')res=(val-32)*5/9+273.15;
+    else if(from==='K'&&to==='F')res=(val-273.15)*9/5+32;
+    else res=val;
+  }else{
+    const baseVal=val*UNITS[cat][from];
+    res=baseVal/UNITS[cat][to];
+  }
+  const rb=document.getElementById('unitResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">${val} ${from} = </div><div class="result-value">${res.toFixed(6)} ${to}</div>`;
+  addHistory('Unit Converter',`${val} ${from} = ${res.toFixed(4)} ${to}`);
+}
+
+// ===== GRAPH PLOTTER =====
+function plotGraph(){
+  const fn=document.getElementById('graphFunc').value;
+  const xmin=parseFloat(document.getElementById('graphXmin').value)||(-10);
+  const xmax=parseFloat(document.getElementById('graphXmax').value)||(10);
+  const xs=[],ys=[];
+  const steps=200;
+  for(let i=0;i<=steps;i++){
+    const x=xmin+(xmax-xmin)*i/steps;
+    xs.push(x);
+    try{ys.push(Function('x','return '+fn)(x));}catch(e){ys.push(null);}
+  }
+  const ctx=document.getElementById('graphCanvas').getContext('2d');
+  if(graphChart)graphChart.destroy();
+  graphChart=new Chart(ctx,{type:'line',data:{labels:xs.map(v=>v.toFixed(1)),datasets:[{label:`f(x) = ${fn}`,data:ys,borderColor:'#f5e642',borderWidth:2,pointRadius:0,tension:.3,fill:false}]},options:{responsive:true,animation:{duration:1000},plugins:{legend:{labels:{color:'#f0f0f8'}}},scales:{x:{ticks:{color:'#888',maxTicksLimit:10},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  addHistory('Graph Plotter','f(x) = '+fn);
+}
+
+// ===== EIGENVALUE =====
+function solveEigen(){
+  const a=parseFloat(document.getElementById('eig00').value);
+  const b=parseFloat(document.getElementById('eig01').value);
+  const c=parseFloat(document.getElementById('eig10').value);
+  const d=parseFloat(document.getElementById('eig11').value);
+  const trace=a+d,det=a*d-b*c;
+  const disc=trace*trace-4*det;
+  const rb=document.getElementById('eigenResult');
+  let html='<div class="result-label">Eigenvalues</div>';
+  if(disc>=0){
+    const l1=(trace+Math.sqrt(disc))/2,l2=(trace-Math.sqrt(disc))/2;
+    html+=`<div class="result-value">λ₁ = ${l1.toFixed(4)}, λ₂ = ${l2.toFixed(4)}</div>`;
+    addHistory('Eigenvalue',`λ₁=${l1.toFixed(3)}, λ₂=${l2.toFixed(3)}`);
+  }else{
+    const re=trace/2,im=Math.sqrt(-disc)/2;
+    html+=`<div class="result-value">λ = ${re.toFixed(4)} ± ${im.toFixed(4)}i</div>`;
+    addHistory('Eigenvalue',`λ = ${re.toFixed(3)} ± ${im.toFixed(3)}i`);
+  }
+  html+=`<div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">Characteristic equation: <code>λ² - trace·λ + det = 0</code></div></div><div class="step"><div class="step-num">2</div><div class="step-text">trace = ${trace}, det = ${det.toFixed(4)}</div></div><div class="step"><div class="step-num">3</div><div class="step-text">Discriminant = ${disc.toFixed(4)}</div></div></div>`;
+  rb.className='result-box show';rb.innerHTML=html;
+}
+
+// ===== CAUCHY-RIEMANN =====
+function checkCR(){
+  const ux=parseFloat(document.getElementById('crUx').value);
+  const uy=parseFloat(document.getElementById('crUy').value);
+  const vx=parseFloat(document.getElementById('crVx').value);
+  const vy=parseFloat(document.getElementById('crVy').value);
+  const c1=Math.abs(ux-vy)<1e-10;
+  const c2=Math.abs(uy+vx)<1e-10;
+  const ok=c1&&c2;
+  const rb=document.getElementById('crResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Result</div><div class="result-value" style="color:${ok?'var(--yellow)':'#ff6b6b'}">${ok?'✅ Cauchy-Riemann Equations Satisfied':'❌ Conditions NOT Satisfied'}</div><div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">Check ∂u/∂x = ∂v/∂y: <code>${ux} ${c1?'=':'≠'} ${vy}</code> → ${c1?'✅':'❌'}</div></div><div class="step"><div class="step-num">2</div><div class="step-text">Check ∂u/∂y = −∂v/∂x: <code>${uy} ${c2?'=':'≠'} ${-vx}</code> → ${c2?'✅':'❌'}</div></div></div>`;
+  addHistory('Cauchy-Riemann','CR conditions '+(ok?'satisfied':'not satisfied'));
+}
+
+// ===== CURRENCY CONVERTER =====
+const CURRENCIES={USD:'🇺🇸 US Dollar',EUR:'🇪🇺 Euro',GBP:'🇬🇧 British Pound',JPY:'🇯🇵 Japanese Yen',INR:'🇮🇳 Indian Rupee',CAD:'🇨🇦 Canadian Dollar',AUD:'🇦🇺 Australian Dollar',CHF:'🇨🇭 Swiss Franc',CNY:'🇨🇳 Chinese Yuan',SGD:'🇸🇬 Singapore Dollar',AED:'🇦🇪 UAE Dirham',SAR:'🇸🇦 Saudi Riyal',MYR:'🇲🇾 Malaysian Ringgit',BDT:'🇧🇩 Bangladeshi Taka',LKR:'🇱🇰 Sri Lankan Rupee',NPR:'🇳🇵 Nepalese Rupee',THB:'🇹🇭 Thai Baht',KRW:'🇰🇷 South Korean Won',BRL:'🇧🇷 Brazilian Real',MXN:'🇲🇽 Mexican Peso',ZAR:'🇿🇦 South African Rand',RUB:'🇷🇺 Russian Ruble',TRY:'🇹🇷 Turkish Lira',IDR:'🇮🇩 Indonesian Rupiah',NGN:'🇳🇬 Nigerian Naira',PKR:'🇵🇰 Pakistani Rupee'};
+const RATES_TO_USD={USD:1,EUR:0.92,GBP:0.79,JPY:149.5,INR:83.1,CAD:1.36,AUD:1.53,CHF:0.88,CNY:7.24,SGD:1.34,AED:3.67,SAR:3.75,MYR:4.72,BDT:110,LKR:320,NPR:132,THB:35.2,KRW:1330,BRL:4.97,MXN:17.2,ZAR:18.6,RUB:90.5,TRY:30.4,IDR:15600,NGN:1580,PKR:278};
+function initCurrencySelects(){
+  const opts=Object.entries(CURRENCIES).map(([k,v])=>`<option value="${k}">${v} (${k})</option>`).join('');
+  ['curFrom','curTo'].forEach(id=>document.getElementById(id).innerHTML=opts);
+  document.getElementById('curFrom').value='USD';
+  document.getElementById('curTo').value='INR';
+}
+function convertCurrency(){
+  const amt=parseFloat(document.getElementById('curAmt').value);
+  const from=document.getElementById('curFrom').value;
+  const to=document.getElementById('curTo').value;
+  const usd=amt/RATES_TO_USD[from];
+  const res=usd*RATES_TO_USD[to];
+  document.getElementById('curDisplay').textContent=res.toFixed(2)+' '+to;
+  document.getElementById('curRate').textContent=`1 ${from} ≈ ${(RATES_TO_USD[to]/RATES_TO_USD[from]).toFixed(4)} ${to} (approximate rates)`;
+  document.getElementById('curResult').className='result-box show';
+  addHistory('Currency',`${amt} ${from} → ${res.toFixed(2)} ${to}`);
+}
+function swapCurrency(){
+  const f=document.getElementById('curFrom').value,t=document.getElementById('curTo').value;
+  document.getElementById('curFrom').value=t;document.getElementById('curTo').value=f;
+  convertCurrency();
+}
+
+// ===== EXPENSE TRACKER =====
+function addExpense(){
+  const item=document.getElementById('expItem').value.trim();
+  const amt=parseFloat(document.getElementById('expAmt').value);
+  if(!item||isNaN(amt))return;
+  const d=getUserData();
+  d.expenses=d.expenses||[];
+  const today=new Date().toLocaleDateString();
+  d.expenses.push({item,amt,date:today,ts:Date.now()});
+  saveUserData(d);
+  document.getElementById('expItem').value='';
+  renderExpenses();
+  addHistory('Expense Tracker',item+': ₹'+amt);
+  // Check vs yesterday
+  const todays=d.expenses.filter(e=>e.date===today);
+  const todayTotal=todays.reduce((s,e)=>s+e.amt,0);
+  const yesterday=new Date(Date.now()-864e5).toLocaleDateString();
+  const yesterdayTotal=d.expenses.filter(e=>e.date===yesterday).reduce((s,e)=>s+e.amt,0);
+  const alertEl=document.getElementById('expenseAlert');
+  if(yesterdayTotal>0){
+    if(todayTotal>yesterdayTotal){alertEl.innerHTML='<div style="background:rgba(255,100,100,.1);border:1px solid #ff6b6b;border-radius:10px;padding:12px;color:#ff6b6b">⚠️ Spending increased vs yesterday!</div>';}
+    else{alertEl.innerHTML='<div style="background:rgba(100,255,100,.1);border:1px solid #6bff6b;border-radius:10px;padding:12px;color:#6bff6b">🎉 Great! Spending decreased vs yesterday!</div>';}
+  }
+}
+function renderExpenses(){
+  const d=getUserData();
+  const exps=d.expenses||[];
+  const tb=document.getElementById('expenseTable');
+  tb.innerHTML=exps.map(e=>`<tr><td>${e.item}</td><td>₹${e.amt}</td><td>${e.date}</td></tr>`).join('');
+  const total=exps.reduce((s,e)=>s+e.amt,0);
+  document.getElementById('expTotal').textContent='Total: ₹'+total.toFixed(2);
+  // Chart by date
+  const byDate={};exps.forEach(e=>{byDate[e.date]=(byDate[e.date]||0)+e.amt;});
+  const ctx=document.getElementById('expenseChart').getContext('2d');
+  if(expenseChartInst)expenseChartInst.destroy();
+  expenseChartInst=new Chart(ctx,{type:'bar',data:{labels:Object.keys(byDate),datasets:[{label:'Daily Spend (₹)',data:Object.values(byDate),backgroundColor:'rgba(245,230,66,.5)',borderColor:'#f5e642',borderWidth:1}]},options:{responsive:true,plugins:{legend:{labels:{color:'#f0f0f8'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+}
+function loadExpenses(){const d=getUserData();if((d.expenses||[]).length)renderExpenses();}
+
+// ===== ELECTRICITY BILL =====
+function calcElec(){
+  const w=parseFloat(document.getElementById('appWatt').value);
+  const h=parseFloat(document.getElementById('appHours').value);
+  const days=parseFloat(document.getElementById('appDays').value);
+  const rate=parseFloat(document.getElementById('billRate').value);
+  const kwh=(w*h*days)/1000;
+  const bill=kwh*rate;
+  const rb=document.getElementById('elecResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Monthly Electricity Bill</div><div class="result-value">₹${bill.toFixed(2)}</div><div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">Energy = <code>${w}W × ${h}h × ${days}d = ${(w*h*days).toFixed(0)} Wh = ${kwh.toFixed(3)} kWh</code></div></div><div class="step"><div class="step-num">2</div><div class="step-text">Bill = <code>${kwh.toFixed(3)} kWh × ₹${rate}/kWh = ₹${bill.toFixed(2)}</code></div></div></div>`;
+  addHistory('Electricity Bill','₹'+bill.toFixed(2)+'/month');
+}
+
+// ===== BUDGET =====
+function calcBudget(){
+  const inc=parseFloat(document.getElementById('budIncome').value);
+  const items={Rent:+document.getElementById('budRent').value,Food:+document.getElementById('budFood').value,Transport:+document.getElementById('budTrans').value,Utilities:+document.getElementById('budUtil').value,Entertainment:+document.getElementById('budEnt').value,Other:+document.getElementById('budOther').value};
+  const total=Object.values(items).reduce((a,b)=>a+b,0);
+  const savings=inc-total;
+  const rb=document.getElementById('budResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Budget Analysis</div><div class="result-value" style="color:${savings>=0?'var(--yellow)':'#ff6b6b'}">Savings: ₹${savings.toFixed(0)}</div><div class="tip">Total Expenses: ₹${total.toFixed(0)} | Income: ₹${inc.toFixed(0)}</div>`;
+  const cw=document.getElementById('budChartWrap');
+  cw.style.display='block';
+  const ctx=document.getElementById('budChart').getContext('2d');
+  if(budChartInst)budChartInst.destroy();
+  budChartInst=new Chart(ctx,{type:'pie',data:{labels:Object.keys(items),datasets:[{data:Object.values(items),backgroundColor:['#f5e642','#f5a623','#7ed321','#4a90e2','#9b59b6','#e74c3c'],borderColor:'#0a0a12',borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#f0f0f8'}}}}});
+  addHistory('Budget','Savings ₹'+savings.toFixed(0));
+}
+
+// ===== TODO PLANNER =====
+function addTodo(){
+  const v=document.getElementById('todoInput').value.trim();
+  if(!v)return;
+  const d=getUserData();d.todos=d.todos||[];
+  d.todos.push({text:v,done:false,id:Date.now()});
+  saveUserData(d);
+  document.getElementById('todoInput').value='';
+  renderTodos();
+}
+function toggleTodo(id){
+  const d=getUserData();
+  d.todos=d.todos.map(t=>t.id===id?{...t,done:!t.done}:t);
+  saveUserData(d);renderTodos();
+}
+function deleteTodo(id){
+  const d=getUserData();d.todos=d.todos.filter(t=>t.id!==id);saveUserData(d);renderTodos();
+}
+function renderTodos(){
+  const d=getUserData();const todos=d.todos||[];
+  document.getElementById('todoList').innerHTML=todos.map(t=>`<div class="todo-item${t.done?' done':''}"><input type="checkbox" class="habit-check" ${t.done?'checked':''} onchange="toggleTodo(${t.id})"><span>${t.text}</span><button class="todo-del" onclick="deleteTodo(${t.id})">✕</button></div>`).join('');
+  const pct=todos.length?Math.round(todos.filter(t=>t.done).length/todos.length*100):0;
+  document.getElementById('todoPct').textContent=pct+'%';
+  document.getElementById('todoBar').style.width=pct+'%';
+  const done=todos.filter(t=>t.done).length,pending=todos.length-done;
+  if(todos.length){
+    const ctx=document.getElementById('todoChart').getContext('2d');
+    if(todoChartInst)todoChartInst.destroy();
+    todoChartInst=new Chart(ctx,{type:'doughnut',data:{labels:['Done','Pending'],datasets:[{data:[done,pending],backgroundColor:['#f5e642','rgba(255,255,255,0.1)'],borderColor:'#0a0a12',borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#f0f0f8'}}}}});
+  }
+}
+function loadTodos(){const d=getUserData();if((d.todos||[]).length)renderTodos();}
+
+// ===== BMI =====
+function calcBMI(){
+  const w=parseFloat(document.getElementById('bmiWeight').value);
+  const h=parseFloat(document.getElementById('bmiHeight').value)/100;
+  const age=parseInt(document.getElementById('bmiAge').value);
+  const gender=document.getElementById('bmiGender').value;
+  const act=parseFloat(document.getElementById('bmiActivity').value);
+  const bmi=w/(h*h);
+  let cat='';
+  if(bmi<18.5)cat='Underweight';else if(bmi<25)cat='Normal Weight';else if(bmi<30)cat='Overweight';else cat='Obese';
+  const bmr=gender==='male'?88.362+(13.397*w)+(4.799*h*100)-(5.677*age):447.593+(9.247*w)+(3.098*h*100)-(4.330*age);
+  const tdee=bmr*act;
+  const rb=document.getElementById('bmiResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">BMI Analysis</div><div class="result-value">${bmi.toFixed(2)} — ${cat}</div><div class="tip">BMR: ${bmr.toFixed(0)} kcal/day | TDEE: ${tdee.toFixed(0)} kcal/day</div><div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">BMI = weight/height² = <code>${w}/${(h*h).toFixed(4)} = ${bmi.toFixed(2)}</code></div></div><div class="step"><div class="step-num">2</div><div class="step-text">Category: <code>${cat}</code></div></div><div class="step"><div class="step-num">3</div><div class="step-text">Daily calorie need: <code>${tdee.toFixed(0)} kcal</code></div></div></div>`;
+  addHistory('BMI','BMI = '+bmi.toFixed(2)+' ('+cat+')');
+}
+
+// ===== HABIT TRACKER =====
+function addHabit(){
+  const v=document.getElementById('habitInput').value.trim();
+  if(!v)return;
+  const d=getUserData();d.habits=d.habits||[];
+  d.habits.push({name:v,streak:0,done:false,id:Date.now()});
+  saveUserData(d);
+  document.getElementById('habitInput').value='';
+  renderHabits();
+}
+function toggleHabit(id){
+  const d=getUserData();
+  d.habits=d.habits.map(h=>{if(h.id===id){const done=!h.done;return{...h,done,streak:done?h.streak+1:Math.max(0,h.streak-1)};}return h;});
+  saveUserData(d);renderHabits();
+}
+function renderHabits(){
+  const d=getUserData();const habits=d.habits||[];
+  document.getElementById('habitList').innerHTML=habits.map(h=>`<div class="habit-row"><input type="checkbox" class="habit-check" ${h.done?'checked':''} onchange="toggleHabit(${h.id})"><span class="habit-label">${h.name}</span><span class="habit-streak">🔥 ${h.streak} day streak</span></div>`).join('');
+  if(habits.length){
+    const ctx=document.getElementById('habitChart').getContext('2d');
+    if(habitChartInst)habitChartInst.destroy();
+    habitChartInst=new Chart(ctx,{type:'bar',data:{labels:habits.map(h=>h.name.length>10?h.name.slice(0,10)+'...':h.name),datasets:[{label:'Streak (days)',data:habits.map(h=>h.streak),backgroundColor:'rgba(245,230,66,.5)',borderColor:'#f5e642',borderWidth:1}]},options:{responsive:true,plugins:{legend:{labels:{color:'#f0f0f8'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  }
+}
+function loadHabits(){const d=getUserData();if((d.habits||[]).length)renderHabits();}
+
+// ===== LIC CALCULATOR =====
+function calcLIC(){
+  const monthly=parseFloat(document.getElementById('licMonthly').value);
+  const years=parseInt(document.getElementById('licYears').value);
+  const rate=parseFloat(document.getElementById('licRate').value)/100/12;
+  const n=years*12;
+  const maturity=monthly*((Math.pow(1+rate,n)-1)/rate)*(1+rate);
+  const invested=monthly*n;
+  const rb=document.getElementById('licResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">LIC Savings Projection</div><div class="result-value">₹${maturity.toFixed(0)}</div><div class="tip">Total Invested: ₹${invested.toFixed(0)} | Gain: ₹${(maturity-invested).toFixed(0)}</div>`;
+  const cw=document.getElementById('licChartWrap');
+  cw.style.display='block';
+  const labels=[],investData=[],matData=[];
+  for(let y=1;y<=years;y++){
+    labels.push('Yr '+y);
+    investData.push(monthly*y*12);
+    const ni=y*12;
+    matData.push(monthly*((Math.pow(1+rate,ni)-1)/rate)*(1+rate));
+  }
+  const ctx=document.getElementById('licChart').getContext('2d');
+  if(licChartInst)licChartInst.destroy();
+  licChartInst=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Invested',data:investData,borderColor:'rgba(255,255,255,.5)',borderWidth:1.5,pointRadius:0,fill:false},{label:'Maturity Value',data:matData,borderColor:'#f5e642',borderWidth:2,pointRadius:0,fill:true,backgroundColor:'rgba(245,230,66,.1)'}]},options:{responsive:true,plugins:{legend:{labels:{color:'#f0f0f8'}}},scales:{x:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#888'},grid:{color:'rgba(255,255,255,.05)'}}}}});
+  addHistory('LIC Savings','₹'+monthly+'/mo × '+years+' yrs → ₹'+maturity.toFixed(0));
+}
+
+// ===== MARKS % =====
+function calcMarks(){
+  const obt=parseFloat(document.getElementById('mksObt').value);
+  const tot=parseFloat(document.getElementById('mksTot').value);
+  const pct=(obt/tot)*100;
+  let grade='';
+  if(pct>=90)grade='O (Outstanding)';else if(pct>=80)grade='A+ (Excellent)';else if(pct>=70)grade='A (Very Good)';else if(pct>=60)grade='B+ (Good)';else if(pct>=50)grade='B (Above Average)';else if(pct>=40)grade='C (Average)';else grade='RA/F (Fail)';
+  const rb=document.getElementById('mksResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Percentage</div><div class="result-value">${pct.toFixed(2)}% — ${grade}</div><div class="steps-box"><div class="step"><div class="step-num">1</div><div class="step-text">% = (Obtained/Total)×100 = <code>(${obt}/${tot})×100</code></div></div><div class="step"><div class="step-num">2</div><div class="step-text">= <code>${pct.toFixed(2)}%</code></div></div><div class="step"><div class="step-num">3</div><div class="step-text">Grade: <code>${grade}</code></div></div></div>`;
+  addHistory('Marks %',obt+'/'+tot+' = '+pct.toFixed(2)+'%');
+}
+
+// ===== GPA CALCULATOR =====
+const GRADE_MAP={O:10,'A+':9,A:8,'B+':7,B:6,C:5,'RA/F':0};
+function initGpaSubjects(){
+  const d=getUserData();
+  if(!(d.gpaSubjects||[]).length){d.gpaSubjects=[{name:'Subject 1',credits:4,grade:'O'},{name:'Subject 2',credits:3,grade:'A+'}];saveUserData(d);}
+}
+function renderGpaSubjects(){
+  const d=getUserData();const subs=d.gpaSubjects||[];
+  document.getElementById('gpaSubjects').innerHTML=subs.map((s,i)=>`<div class="input-row" style="margin-bottom:10px"><div class="inp-group"><label>Subject</label><input type="text" value="${s.name}" oninput="updateGpaSub(${i},'name',this.value)"></div><div class="inp-group"><label>Credits</label><input type="number" value="${s.credits}" min="1" max="6" oninput="updateGpaSub(${i},'credits',this.value)"></div><div class="inp-group"><label>Grade</label><select onchange="updateGpaSub(${i},'grade',this.value)">${Object.keys(GRADE_MAP).map(g=>`<option value="${g}" ${s.grade===g?'selected':''}>${g} (${GRADE_MAP[g]})</option>`).join('')}</select></div></div>`).join('');
+}
+function addGpaSubject(){
+  const d=getUserData();d.gpaSubjects=d.gpaSubjects||[];
+  d.gpaSubjects.push({name:'Subject '+(d.gpaSubjects.length+1),credits:3,grade:'A'});
+  saveUserData(d);renderGpaSubjects();
+}
+function updateGpaSub(i,k,v){
+  const d=getUserData();d.gpaSubjects[i][k]=k==='credits'?parseInt(v):v;saveUserData(d);
+}
+function calcGPA(){
+  const d=getUserData();const subs=d.gpaSubjects||[];
+  const total=subs.reduce((s,sub)=>s+(GRADE_MAP[sub.grade]*(sub.credits||0)),0);
+  const totalCredits=subs.reduce((s,sub)=>s+(sub.credits||0),0);
+  const gpa=totalCredits?total/totalCredits:0;
+  document.getElementById('gpaVal').textContent=gpa.toFixed(2);
+  const circle=document.getElementById('gpaMeterCircle');
+  const offset=314-(314*(gpa/10));
+  circle.style.strokeDashoffset=offset;
+  document.getElementById('gpaTableBody').innerHTML=subs.map(s=>`<tr><td>${s.name}</td><td>${s.credits}</td><td>${s.grade}</td><td>${GRADE_MAP[s.grade]*s.credits}</td></tr>`).join('');
+  document.getElementById('gpaResult').className='result-box show';
+  addHistory('GPA','GPA = '+gpa.toFixed(2));
+}
+
+// ===== CGPA =====
+function initCgpaSems(){
+  const d=getUserData();
+  if(!(d.cgpaSems||[]).length){d.cgpaSems=[{name:'Semester 1',gpa:8.5,credits:24}];saveUserData(d);}
+}
+function renderCgpaSems(){
+  const d=getUserData();const sems=d.cgpaSems||[];
+  document.getElementById('cgpaSems').innerHTML=sems.map((s,i)=>`<div class="input-row"><div class="inp-group"><label>Semester</label><input type="text" value="${s.name}" oninput="updateCgpaSem(${i},'name',this.value)"></div><div class="inp-group"><label>GPA</label><input type="number" value="${s.gpa}" step="0.01" max="10" oninput="updateCgpaSem(${i},'gpa',this.value)"></div><div class="inp-group"><label>Credits</label><input type="number" value="${s.credits}" oninput="updateCgpaSem(${i},'credits',this.value)"></div></div>`).join('');
+}
+function addCgpaSem(){
+  const d=getUserData();d.cgpaSems=d.cgpaSems||[];
+  d.cgpaSems.push({name:'Semester '+(d.cgpaSems.length+1),gpa:8.0,credits:24});
+  saveUserData(d);renderCgpaSems();
+}
+function updateCgpaSem(i,k,v){
+  const d=getUserData();d.cgpaSems[i][k]=k==='name'?v:parseFloat(v);saveUserData(d);
+}
+function calcCGPA(){
+  const d=getUserData();const sems=d.cgpaSems||[];
+  const total=sems.reduce((s,sem)=>s+(sem.gpa*sem.credits),0);
+  const totalC=sems.reduce((s,sem)=>s+sem.credits,0);
+  const cgpa=totalC?total/totalC:0;
+  const rb=document.getElementById('cgpaResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">CGPA</div><div class="result-value">${cgpa.toFixed(2)} / 10</div><div class="tip">Total Credits: ${totalC}</div>`;
+  addHistory('CGPA','CGPA = '+cgpa.toFixed(2));
+}
+
+// ===== GPA TO PCT =====
+function convertGpa(){
+  const gpa=parseFloat(document.getElementById('gpa2pct').value);
+  const pct=(gpa-0.5)*10;
+  const rb=document.getElementById('gpa2pctResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Percentage (approx)</div><div class="result-value">${pct.toFixed(2)}%</div><div class="tip">Formula: % ≈ (GPA - 0.5) × 10</div>`;
+  addHistory('GPA→%',gpa+' GPA = '+pct.toFixed(2)+'%');
+}
+
+// ===== STUDY PROGRESS =====
+function addStudProgress(){
+  const sub=document.getElementById('studSub').value.trim();
+  const done=parseInt(document.getElementById('studDone').value);
+  const total=parseInt(document.getElementById('studTotal').value);
+  if(!sub)return;
+  const d=getUserData();d.studProgress=d.studProgress||[];
+  const idx=d.studProgress.findIndex(s=>s.sub===sub);
+  if(idx>=0)d.studProgress[idx]={sub,done,total};
+  else d.studProgress.push({sub,done,total});
+  saveUserData(d);
+  renderStudProgress();
+  addHistory('Study Progress',sub+': '+done+'/'+total);
+}
+function renderStudProgress(){
+  const d=getUserData();const list=d.studProgress||[];
+  document.getElementById('studProgressList').innerHTML=list.map(s=>{
+    const pct=Math.round(s.done/s.total*100);
+    return`<div style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="color:var(--text)">${s.sub}</span><span style="color:var(--yellow);font-weight:700">${pct}%</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div><div class="tip">${s.done} / ${s.total} topics done</div></div>`;
+  }).join('');
+}
+function loadStudProgress(){const d=getUserData();if((d.studProgress||[]).length)renderStudProgress();}
+
+// ===== COLLEGE EXPENSE =====
+function calcColExp(){
+  const t=+document.getElementById('colTuition').value;
+  const h=+document.getElementById('colHostel').value;
+  const f=+document.getElementById('colFood').value;
+  const b=+document.getElementById('colBooks').value;
+  const tr=+document.getElementById('colTrans').value;
+  const o=+document.getElementById('colOther').value;
+  const sems=+document.getElementById('colSems').value;
+  const perSem=t+h+f+b+tr+o;
+  const total=perSem*sems;
+  const rb=document.getElementById('colResult');
+  rb.className='result-box show';
+  rb.innerHTML=`<div class="result-label">Total College Expense</div><div class="result-value">₹${total.toFixed(0)}</div><div class="tip">Per Semester: ₹${perSem.toFixed(0)} × ${sems} sems</div>`;
+  addHistory('College Expense','Total ₹'+total.toFixed(0)+' over '+sems+' semesters');
+}
+
+// ===== HISTORY =====
+function renderHistory(){
+  const d=getUserData();const hist=d.history||[];
+  if(!hist.length){document.getElementById('histList').innerHTML='<p style="color:var(--muted);text-align:center;margin-top:40px">No history yet. Start calculating!</p>';return;}
+  document.getElementById('histList').innerHTML=hist.map(h=>`<div class="hist-entry"><div><div class="h-type">${h.type}</div><div class="h-content">${h.content}</div></div><div class="h-time">${h.time}</div></div>`).join('');
+}
+function clearHistory(){
+  const d=getUserData();d.history=[];saveUserData(d);renderHistory();
+}
+
+// ===== AI ASSISTANT =====
+function toggleAI(){
+  const w=document.getElementById('aiWindow');
+  w.classList.toggle('open');
+}
+
+const AI_KB={
+  'quadratic':'The quadratic formula is x = (-b ± √(b²-4ac)) / 2a. Use it to solve ax²+bx+c=0.',
+  'derivative':'The power rule for derivatives: d/dx[xⁿ] = n·xⁿ⁻¹. Try the Calculus Solver in Engineering Calculator!',
+  'integral':'Integration power rule: ∫xⁿ dx = xⁿ⁺¹/(n+1) + C. Open the Calculus Solver to compute!',
+  'matrix':'Matrix operations include determinant, inverse, multiplication. Open the Matrix Calculator!',
+  'gpa':'GPA = Σ(Grade Points × Credits) / Total Credits. Use the GPA Calculator in Student section!',
+  'bmi':'BMI = weight(kg) / height(m)². Below 18.5 = Underweight, 18.5–24.9 = Normal, 25–29.9 = Overweight, 30+ = Obese.',
+  'laplace':'Laplace transforms convert time-domain functions to frequency domain. L{eᵃᵗ} = 1/(s-a). Try the Laplace Calculator!',
+  'vector':'Vector operations: Dot product = A·B = |A||B|cosθ, Cross product magnitude = |A||B|sinθ. Use Vector Algebra!',
+  'prime':'A prime number is only divisible by 1 and itself. Check the Prime Number Checker!',
+  'eigenvalue':'Eigenvalues λ satisfy det(A - λI) = 0. For 2×2: λ² - trace·λ + det = 0. Use the Eigenvalue Calculator!',
+  'currency':'Convert between world currencies using the Currency Converter in Lifestyle section.',
+  'hello':'Hello! I\'m your Math Galaxy AI Assistant! Ask me about any formula, concept, or calculator.',
+  'hi':'Hi there! Ready to solve some math? Ask me anything!',
+  'calculus':'Calculus covers derivatives, integrals, and limits. Use our Calculus Solver for step-by-step solutions!',
+  'fourier':'Fourier series represents periodic functions as sums of sines and cosines: f(x) = a₀/2 + Σ(aₙcos(nπx/L) + bₙsin(nπx/L))',
+  'probability':'Probability ranges from 0 to 1. P(A) = favorable outcomes / total outcomes. Check the Probability Calculator!',
+  'trigonometry':'Key identities: sin²θ + cos²θ = 1, sin(2θ) = 2sinθcosθ, cos(2θ) = cos²θ - sin²θ.',
+  'complex':'Complex numbers: z = a + bi. Modulus |z| = √(a²+b²). Argument = atan2(b,a). Use Complex Number Converter!',
+};
+
+async function sendAI(){
+  const input=document.getElementById('aiInput');
+  const query=input.value.trim();
+  if(!query)return;
+  input.value='';
+  const msgs=document.getElementById('aiMessages');
+  msgs.innerHTML+=`<div class="ai-msg user">${query}</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+  // Show typing
+  const typingId='typing_'+Date.now();
+  msgs.innerHTML+=`<div class="ai-msg bot" id="${typingId}">✦ Thinking...</div>`;
+  msgs.scrollTop=msgs.scrollHeight;
+
+  // Try built-in knowledge base first
+  const lower=query.toLowerCase();
+  let found='';
+  for(const [key,val] of Object.entries(AI_KB)){
+    if(lower.includes(key)){found=val;break;}
+  }
+
+  // Call Anthropic API
+  try{
+    const response=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:'You are Math Galaxy AI, a friendly math and engineering assistant for college students. Give concise, helpful answers about mathematics, formulas, and calculations. Use simple language. Keep responses under 150 words.',
+        messages:[{role:'user',content:query}]
+      })
+    });
+    const data=await response.json();
+    const reply=data.content?.[0]?.text||found||'I can help with math questions! Try asking about derivatives, matrices, GPA calculations, or any formula.';
+    document.getElementById(typingId).textContent=reply;
+  }catch(e){
+    const fallback=found||'I can help with math! Ask me about formulas, how to use a calculator, or explain any concept. Try: "What is the quadratic formula?" or "How to calculate GPA?"';
+    document.getElementById(typingId).textContent=fallback;
+  }
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+// ===== INIT =====
+window.addEventListener('DOMContentLoaded',()=>{
+  buildMatrix();
+  initCurrencySelects();
+  updateUnitSelects();
+});
+</script>
+</body>
+</html>
